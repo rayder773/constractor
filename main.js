@@ -5,90 +5,104 @@ import { Component } from "./component.js";
 import { div } from "./templateBuilder.js";
 import { homePage } from "./pages/home.js";
 import { loginPage } from "./pages/login.js";
+import { Frame } from "./frame.js";
+import { Module, ViewModule } from "./module.js";
 
-document.documentElement.events = [];
-
-const test = div({
-  text: 228,
-  name: "parent",
-  children: [
-    div({
-      text: "child_1",
-      name: "child_1",
-      children: [div({ name: "child_1-1", text: "child_1-1" })],
-    }),
-  ],
+const frame = new Frame({
+  modules: {
+    window: () =>
+      new ViewModule({
+        data: {
+          width: "",
+          height: "",
+        },
+        view: {
+          events: {
+            resize(e) {
+              return {
+                width: window.innerWidth,
+                height: window.innerHeight,
+              };
+            },
+          },
+        },
+        events: {
+          mobileDevice({ width }) {
+            return width <= 760;
+          },
+        },
+        // listen: {
+        //   newPage(data) {
+        //     console.log("newPage", data);
+        //   },
+        // },
+      }),
+    location: () =>
+      new ViewModule({
+        data: {
+          page: "/",
+        },
+        view: {
+          events: {
+            hashchange() {
+              return {
+                page: window.location.hash.replace("#", ""),
+              };
+            },
+          },
+        },
+        events: {
+          newPage(data) {
+            return data;
+          },
+        },
+        // listen: {
+        //   mobileDevice(data) {
+        //     console.log("mobileDevice", data);
+        //   },
+        // },
+      }),
+    app: () =>
+      new ViewModule({
+        data: {
+          div: {
+            text: "App",
+            name: "textContainer",
+            ch: [
+              {
+                span: {
+                  text: "span chuild",
+                  ch: [
+                    {
+                      form: {
+                        ch: [
+                          {
+                            input: { name: "inpiut" },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+        listen: {
+          startApp(container) {
+            this.create();
+            this.set("textContainer", { appendTo: container });
+          },
+          newPage(page) {
+            this.set({
+              content: page,
+            });
+          },
+        },
+      }),
+  },
 });
 
-function checkAB() {
-  return 2 === 3;
-}
-const routes = {
-  "/": {
-    // permissions: {
-    //   check: [checkAB],
-    //   fallback: "/login",
-    // },
-    // redirect: "home",
-    // withParams: {
-    //   ":id": "",
-    //   ":id/:name": "",
-    // },
-    // beforeMount() {},
-    page: homePage,
-    // afterMount() {},
-  },
-  "/login": {
-    page: loginPage,
-  },
-  "/logout": {
-    redirect: "/login",
-    // page: homePage,
-  },
-};
+frame.trigger("startApp", document.getElementById("app"));
 
-const app = new App({ router: routes });
-// const router = new Router({ routes });
-
-// console.log(router);
-
-// const view = new View(test, {
-//   parent: {
-//     color: "red",
-//   },
-//   child_1: {
-//     color: "green",
-//   },
-// });
-
-// const viewComponent = new Component({
-//   view,
-//   models: {
-//     user: {},
-//   },
-//   client: {
-//     listenModels: {
-//       default() {},
-//       changeColor(color) {
-//         this.view.$("text").style.color = color;
-//         this.clienTriggers.parent.click = "testClick";
-//       },
-//     },
-//   },
-//   appState: {
-//     listenClient: {
-//       onParentClick(models) {
-//         models.user.changeName("denys");
-//       },
-//     },
-//   },
-//   newtwork: {
-//     listenClient: {
-//       onParentClick() {
-//         // models.user.changeName("denys");
-//       },
-//     },
-//   },
-// });
-
-// view.appendTo(document.body);
+window.frame = frame;
