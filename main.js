@@ -41,7 +41,7 @@ const frame = new Frame({
     location: () =>
       new ViewModule({
         data: {
-          page: "/",
+          page: window.location.hash.replace("#", "") || "/",
         },
         view: {
           events: {
@@ -53,13 +53,14 @@ const frame = new Frame({
           },
         },
         events: {
-          newPage(data) {
+          askForPage(data) {
             return data;
           },
         },
         listen: {
           askForPage() {
-            return this.data.page;
+            const page = this._model._data.page;
+            this.trigger("whoIsPage", page);
           },
         },
       }),
@@ -68,13 +69,83 @@ const frame = new Frame({
         listen: {
           startApp(container) {
             const app = HTMLtoObject(container);
-
             this.change(app);
+            this.trigger("askForPage");
           },
-          newPage(page) {
+          setPage(page) {
             this.set({
-              content: page,
+              app: {
+                content: page,
+              },
             });
+          },
+        },
+      }),
+    router: () =>
+      new Module({
+        data: {
+          "/": "homePage",
+          "/login": "loginPage",
+        },
+        listen: {
+          whoIsPage(pageName) {
+            if (this._model._data[pageName]) {
+              this.trigger(this._model._data[pageName]);
+            }
+          },
+        },
+      }),
+    homePage: () =>
+      new ViewModule({
+        data: {
+          div: {
+            name: "home_page",
+            ch: [
+              {
+                div: {
+                  text: "home page",
+                },
+              },
+              {
+                a: {
+                  href: "#/login",
+                  text: "back to login page",
+                },
+              },
+            ],
+          },
+        },
+        listen: {
+          homePage() {
+            this.decoratorCreate();
+            this.trigger("setPage", this.component);
+          },
+        },
+      }),
+    loginPage: () =>
+      new ViewModule({
+        data: {
+          div: {
+            name: "login_page",
+            ch: [
+              {
+                div: {
+                  text: "login page hello",
+                },
+              },
+              {
+                a: {
+                  href: "#/",
+                  text: "back to home",
+                },
+              },
+            ],
+          },
+        },
+        listen: {
+          loginPage() {
+            this.decoratorCreate();
+            this.trigger("setPage", this.component);
           },
         },
       }),

@@ -28,6 +28,10 @@ export class Module {
   set frame(frame) {
     this._frame = frame;
   }
+
+  trigger(...args) {
+    this._frame.trigger(...args);
+  }
 }
 
 export class ViewModule extends Module {
@@ -36,7 +40,17 @@ export class ViewModule extends Module {
       this.textContent = data;
     },
     appendTo(data) {
-      data.append(this);
+      this.append(data);
+    },
+    href(data) {
+      this.href = data;
+    },
+    append(data) {
+      this.append(data);
+    },
+    content(data) {
+      this.innerHTML = "";
+      this.append(data);
     },
   };
 
@@ -73,6 +87,12 @@ export class ViewModule extends Module {
         );
       }
     }
+  }
+
+  decoratorCreate(element = this._model._data) {
+    const component = this.create(element);
+    this.component = component;
+    return this;
   }
 
   create(element = this._model._data) {
