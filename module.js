@@ -28,14 +28,18 @@ export class Module {
   set frame(frame) {
     this._frame = frame;
   }
-
-  set(field, values) {
-    for (let key in values) {
-    }
-  }
 }
 
 export class ViewModule extends Module {
+  props = {
+    text(data) {
+      this.textContent = data;
+    },
+    appendTo(data) {
+      data.append(this);
+    },
+  };
+
   constructor({ view = {}, ...props } = {}) {
     super(props);
     this.view = view;
@@ -82,8 +86,8 @@ export class ViewModule extends Module {
     }
 
     for (let propName in elProps) {
-      if (props[propName] && elProps[propName]) {
-        props[propName].call(component, elProps[propName]);
+      if (this.props[propName] && elProps[propName]) {
+        this.props[propName].call(component, elProps[propName]);
       } else if (propName == "ch") {
         const children = elProps.ch;
 
@@ -96,16 +100,38 @@ export class ViewModule extends Module {
 
     return component;
   }
-}
 
-var props = {
-  text(data) {
-    this.textContent = data;
-  },
-  appendTo(data) {
-    data.append(this);
-  },
-};
+  change(dataObj = {}) {
+    for (let tagName in dataObj) {
+      const elProps = dataObj[tagName];
+
+      if (elProps.element && elProps.name) {
+        this.names[elProps.name] = elProps.element;
+        delete elProps.element;
+      }
+
+      if (elProps.ch?.length) {
+        elProps.ch.forEach((c) => {
+          this.change(c);
+        });
+      }
+    }
+
+    this.data = dataObj;
+  }
+
+  set(values) {
+    for (let name in values) {
+      if (this.names[name]) {
+        for (let prop in values[name]) {
+          if (this.props[prop]) {
+            this.props[prop].call(this.names[name], values[name][prop]);
+          }
+        }
+      }
+    }
+  }
+}
 
 class Model {
   _data = null;

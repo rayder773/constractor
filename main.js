@@ -7,6 +7,7 @@ import { homePage } from "./pages/home.js";
 import { loginPage } from "./pages/login.js";
 import { Frame } from "./frame.js";
 import { Module, ViewModule } from "./module.js";
+import { HTMLtoObject } from "./utils.js";
 
 const frame = new Frame({
   modules: {
@@ -56,42 +57,19 @@ const frame = new Frame({
             return data;
           },
         },
-        // listen: {
-        //   mobileDevice(data) {
-        //     console.log("mobileDevice", data);
-        //   },
-        // },
+        listen: {
+          askForPage() {
+            return this.data.page;
+          },
+        },
       }),
     app: () =>
       new ViewModule({
-        data: {
-          div: {
-            text: "App",
-            name: "textContainer",
-            ch: [
-              {
-                span: {
-                  text: "span chuild",
-                  ch: [
-                    {
-                      form: {
-                        ch: [
-                          {
-                            input: { name: "inpiut" },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
         listen: {
           startApp(container) {
-            this.create();
-            this.set("textContainer", { appendTo: container });
+            const app = HTMLtoObject(container);
+
+            this.change(app);
           },
           newPage(page) {
             this.set({
