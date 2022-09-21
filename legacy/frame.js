@@ -9,14 +9,33 @@ export class Frame {
   set modules(modules) {
     this._modules = modules;
     for (let key in modules) {
-      const m = modules[key]();
+      let m = modules[key]();
+
       m.frame = this;
+
       this._modules[key] = m;
 
       for (let eventName in m.listen) {
         this.setEvent(eventName, m);
       }
+
+      while (m.modules) {
+        const modulesCopy = m.modules;
+        for (let key in modulesCopy) {
+          m = m.modules[key]();
+          m.frame = this;
+          this._modules[key] = m;
+
+          for (let eventName in m.listen) {
+            this.setEvent(eventName, m);
+          }
+        }
+      }
     }
+  }
+
+  setModule(name, module) {
+    this._modules[name] = module;
   }
 
   setEvent(event, module) {

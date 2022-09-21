@@ -2,12 +2,14 @@ export class Module {
   _frame = null;
   _events = null;
   _model = null;
+  // _modules = {};
   names = {};
 
-  constructor({ data = {}, events = {}, listen = {} } = {}) {
+  constructor({ data = {}, events = {}, listen = {}, modules = null } = {}) {
     this.data = data;
     this._events = events;
     this.listen = listen;
+    this.modules = modules;
   }
 
   set data(data) {
@@ -51,6 +53,13 @@ export class ViewModule extends Module {
     content(data) {
       this.innerHTML = "";
       this.append(data);
+    },
+    style(data) {
+      for (let key in data) {
+        if (typeof this.style[key] !== undefined) {
+          this.style[key] = data[key];
+        }
+      }
     },
   };
 
