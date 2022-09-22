@@ -5,6 +5,13 @@ const component = new Component({
   viewModel: {
     div: {
       name: "main",
+      append: [
+        {
+          div: {
+            name: "child_1",
+          },
+        },
+      ],
     },
   },
   events: {
@@ -18,27 +25,43 @@ const component = new Component({
   },
 });
 
-const child = new Component({
+const child = {
   viewModel: {
     div: {
-      name: "child_1",
       text: "child 1",
     },
   },
-});
+};
+
+const main = {
+  viewModel: {
+    div: {
+      text: "main secrion",
+    },
+  },
+};
 
 // child.create();
 
 component.create();
 component.setEvents();
 
-// component.add({});
+component.add({
+  main: main,
+  child_1: child,
+});
 // // debugger;
 // component.change({
 //   main: {
 //     append: [child.viewModel],
 //   },
 // });
+
+const frame = new Frame({
+  name: "",
+  modules: {},
+  view: null,
+});
 
 app.append(component.html);
 

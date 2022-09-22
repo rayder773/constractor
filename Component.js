@@ -2,14 +2,43 @@ export class Entity {
   constructor() {
     this.parent = null;
     this.frame = this;
+    this.children = {};
+    this.name = "";
+  }
+
+  addChildren(children) {
+    for (let childName in children) {
+      if (this.children[childName]) {
+        console.error(`child with name ${childName} already exist`);
+        continue;
+      }
+
+      this.children[childName] = children[childName];
+    }
+
+    return this;
+  }
+
+  getChildren() {
+    return this.children;
   }
 
   setFrame(frame) {
     this.frame = frame;
+    return this;
+  }
+
+  getFrame() {
+    return this.frame;
   }
 
   setParent(parent) {
     this.parent = parent;
+    return this;
+  }
+
+  getParent() {
+    return this.parent;
   }
 
   trigger() {}
@@ -23,8 +52,6 @@ export class Component extends Entity {
 
     this.viewModel = viewModel;
     this.events = events;
-
-    this.children = {};
     this.html = null;
   }
 
@@ -67,6 +94,12 @@ export class Component extends Entity {
 
   create() {
     this.html = this.setViewModel();
+  }
+
+  add(components) {
+    for (let componentName in components) {
+      const component = new Component(components[componentName]);
+    }
   }
 
   setProps(elProps, component) {
@@ -126,5 +159,13 @@ export class Component extends Entity {
         );
       }
     }
+  }
+
+  trigger(eventName, data) {
+    this.frame.trigger(eventName, data);
+  }
+
+  subscribe(eventName, cb) {
+    this.frame.subscribe(eventName, cb);
   }
 }
