@@ -1,11 +1,26 @@
-import { Entity } from "./Component.js";
+import { Component } from "./Component.js";
+import { Entity } from "./Entity.js";
+import { HTMLtoObject } from "./utils.js";
 
 export class Frame extends Entity {
-  constructor({ name = "", modules = {}, view = null, events = {} } = {}) {
+  constructor({ modules = {}, view = null, events = {}, ...props } = {}) {
+    super(props);
     this.events = events;
-    this.name = name;
     this.modules = modules;
     this.view = view;
+  }
+
+  initView() {
+    if (this.view instanceof HTMLElement) {
+      const viewModel = HTMLtoObject(this.view);
+      this.view = new Component({ viewModel });
+      // console.log(viewModel);
+    } else if (
+      typeof this.view === "object" &&
+      Object.keys(this).length !== undefined
+    ) {
+      // this.v;
+    }
   }
 
   subscribe(eventName, cb) {

@@ -2,67 +2,27 @@ import { Component } from "./Component.js";
 import { Frame } from "./Frame.js";
 
 const component = new Component({
-  viewModel: {
-    div: {
-      name: "main",
-      append: [
-        {
-          div: {
-            name: "child_1",
-          },
-        },
-      ],
-    },
-  },
-  events: {
-    click(e) {
-      this.change({
-        main: {
-          text: +new Date(),
-        },
-      });
-    },
-  },
+  viewModel: {},
 });
-
-const child = {
-  viewModel: {
-    div: {
-      text: "child 1",
-    },
-  },
-};
-
-const main = {
-  viewModel: {
-    div: {
-      text: "main secrion",
-    },
-  },
-};
-
-// child.create();
-
-component.create();
-component.setEvents();
-
-component.add({
-  main: main,
-  child_1: child,
-});
-// // debugger;
-// component.change({
-//   main: {
-//     append: [child.viewModel],
-//   },
-// });
 
 const frame = new Frame({
-  name: "",
+  name: "app",
   modules: {},
-  view: null,
+  view: document.getElementById("app"),
 });
 
-app.append(component.html);
+frame.initView();
+
+console.log(frame);
+
+// const frame1 = new Frame({
+//   name: "app",
+//   modules: {},
+//   view: component,
+// });
+
+// frame1.initView();
+
+// app.append(component.html);
 
 // console.log(component.$("child_1_1"));
