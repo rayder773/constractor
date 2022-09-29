@@ -19,7 +19,10 @@ export class Frame extends Module {
         module.setParent(this);
 
         for (let name in module.subscribeTo) {
-          this.events[name] = module.subscribeTo[name];
+          this.events[name] = {
+            module,
+            cb: module.subscribeTo[name],
+          };
         }
       }
 
@@ -56,7 +59,7 @@ export class Frame extends Module {
 
     events.forEach((e) => {
       if (this.events[e]) {
-        this.events[e](data);
+        this.events[e].cb.call(this.events[e].module, data);
       }
     });
   }

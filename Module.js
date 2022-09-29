@@ -32,16 +32,20 @@ export class Module {
   }
 
   append() {
-    this.hooks?.append();
+    if (this.hooks.append) {
+      this.hooks.append.call(this);
+    }
   }
 
   remove() {
-    this.hooks?.remove();
+    if (this.hooks.remove) {
+      this.hooks.remove.call(this);
+    }
   }
 
   trigger(event, data) {
     if (this.parent) {
-      this.parent.trigger(event, data);
+      this.parent.trigger(event, data, this);
     }
   }
 
