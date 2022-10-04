@@ -1,13 +1,12 @@
-import { Module } from "./Module.js";
+import { Child } from "./Child.js";
+import { Entity } from "./Entity.js";
 
-export class View extends Module {
-  component = null;
-  elements = {};
+export class View extends Child {
   children = {};
 
-  constructor({ component, ...props } = {}) {
-    super(props);
-    this.setComponent(component);
+  constructor({ component } = {}) {
+    super();
+    this._setComponent(component);
   }
 
   get props() {
@@ -31,6 +30,9 @@ export class View extends Module {
         this.innerHTML = "";
         this.append(data);
       },
+      title(data) {
+        this.title = data;
+      },
       style(data) {
         for (let key in data) {
           if (typeof this.style[key] !== undefined) {
@@ -41,14 +43,24 @@ export class View extends Module {
     };
   }
 
-  $(name) {
-    return this.elements[name];
+  get root() {
+    return this.children.root;
   }
 
-  setComponent(component) {
+  $(name) {
+    return this.children[name];
+  }
+
+  _setUserEvents(events) {
+    for (const name in events) {
+      window.addEventListener(name, (e) => {});
+    }
+  }
+
+  _setComponent(component) {
     if (!component) return;
 
-    if (component instanceof HTMLElement) {
+    if (component instanceof HTMLElement || component instanceof HTMLDocument) {
       const elements = component.querySelectorAll("[name]");
 
       if (elements) {
@@ -57,14 +69,14 @@ export class View extends Module {
         });
       }
 
-      this.component = component;
+      this.children.root = component;
     } else if (typeof component === "string") {
     } else {
-      this.component = this.setViewModel(component);
+      this.children.root = this._setViewModel(component);
     }
   }
 
-  setViewModel(element) {
+  _setViewModel(element) {
     const tag = Object.keys(element)[0];
     let component = document.createElement(tag);
 
@@ -74,12 +86,12 @@ export class View extends Module {
       this.children[elProps.name] = component;
     }
 
-    this.setProps(elProps, component);
+    this._setProps(elProps, component);
 
     return component;
   }
 
-  setProps(elProps, component) {
+  _setProps(elProps, component) {
     for (let propName in elProps) {
       if (this.props[propName] && elProps[propName]) {
         this.props[propName].call(component, elProps[propName], this);
@@ -92,7 +104,7 @@ export class View extends Module {
       const element = this.children[elementName];
 
       if (element) {
-        this.setProps(elements[elementName], element);
+        this._setProps(elements[elementName], element);
       }
     }
   }

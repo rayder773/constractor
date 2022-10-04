@@ -1,134 +1,93 @@
-import { App } from "./app.js";
-import { Router } from "./router.js";
-import { View } from "./view.js";
-import { Component } from "./component.js";
-import { div } from "./templateBuilder.js";
-import { homePage } from "./pages/home.js";
-import { loginPage } from "./pages/login.js";
-import { Frame } from "./frame.js";
-import { Module, ViewModule } from "./module.js";
-import { HTMLtoObject } from "./utils.js";
+import { App } from "./App.js";
+import { Component } from "./Component.js";
+import { View } from "./View.js";
 
-const frame = new Frame({
-  modules: {
-    window: () =>
-      new ViewModule({
-        data: {
-          width: "",
-          height: "",
-        },
-        view: {
-          events: {
-            resize(e) {
-              return {
-                width: window.innerWidth,
-                height: window.innerHeight,
-              };
-            },
-          },
-        },
-        events: {
-          mobileDevice({ width }) {
-            return width <= 760;
-          },
-        },
-        // listen: {
-        //   newPage(data) {
-        //     console.log("newPage", data);
-        //   },
-        // },
-      }),
-    location: () =>
-      new ViewModule({
-        data: {
-          page: window.location.hash.replace("#", "") || "/",
-        },
-        view: {
-          events: {
-            hashchange(e) {
-              return {
-                page: window.location.hash.replace("#", "") || "/",
-              };
-            },
-          },
-        },
-        events: {
-          askForPage(data) {
-            return data;
-          },
-        },
-        listen: {
-          askForPage() {
-            const page = this._model._data.page;
-            this.trigger("whoIsPage", page);
-          },
-        },
-      }),
-    app: () =>
-      new ViewModule({
-        listen: {
-          startApp(container) {
-            const app = HTMLtoObject(container);
-            this.change(app);
-            this.trigger("askForPage");
-          },
-          setPage(page) {
-            this.set({
-              app: {
-                style: {
-                  height: "100%",
-                },
-                content: page,
-              },
-            });
-          },
-        },
-      }),
-    router: () =>
-      new Module({
-        data: {
-          "/": "homePage",
-          "/login": "loginPage",
-        },
-        listen: {
-          whoIsPage(pageName) {
-            if (this._model._data[pageName]) {
-              this.trigger(this._model._data[pageName]);
-            }
-          },
-        },
-      }),
-    homePage,
-    loginPage: () =>
-      new ViewModule({
-        data: {
-          div: {
-            name: "login_page",
-            ch: [
-              {
-                div: {
-                  text: "login page hello",
-                },
-              },
-              {
-                a: {
-                  href: "#/",
-                  text: "back to home",
-                },
-              },
-            ],
-          },
-        },
-        listen: {
-          loginPage() {
-            this.decoratorCreate();
-            this.trigger("setPage", this.component);
-          },
-        },
-      }),
+const documentView = new View({
+  component: document,
+  interface: {
+    appendPage(page) {
+      this.change({
+        body: page,
+      });
+    },
   },
 });
 
-frame.trigger("startApp", document.getElementById("app"));
+const documentComponent = new Component({
+  children: [documentView],
+  channels: {
+    global: ["appendPage"],
+  },
+  hooks: {
+    append() {
+      this.trigger({
+        global: ["askForPage"],
+      });
+    },
+  },
+});
 
-window.frame = frame;
+const builderView = new View({
+  component: {
+    div: {
+      style: {
+        display: "grid",
+        gridAutoFlow: "row",
+        gridTemplateColumns: "max-content 1fr max-content",
+        height: "100%",
+      },
+      name: "builder",
+      append: [
+        {
+          div: {
+            name: "components",
+            style: {
+              border: "1px solid",
+              width: "200px",
+            },
+          },
+        },
+        {
+          div: {
+            name: "pages",
+            style: {
+              border: "1px solid",
+            },
+          },
+        },
+        {
+          div: {
+            style: {
+              name: "settings",
+              border: "1px solid",
+              width: "200px",
+            },
+          },
+        },
+      ],
+    },
+  },
+});
+
+const builderComponent = new Component({
+  children: [builderView],
+  // hooks: {
+  //   append() {
+  //     this.trigger({
+  //       global: {
+  //         appendPage: this.root(),
+  //       },
+  //     });
+  //   },
+  // },
+});
+
+const app = new App({
+  children: [documentComponent, builderComponent],
+  // channels: {
+  //   global: { list: [] },
+  //   builderPage: { list: [] },
+  // },
+});
+
+app.start();

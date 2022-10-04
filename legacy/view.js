@@ -1,78 +1,103 @@
-class View {
-  constructor(template, styles) {
-    this.nameToElement = {};
-    this.template = template;
-    this.nameToStyle = styles;
-    this.setNames();
-    this.setStyles();
+import { Module } from "./Module.js";
+
+export class View extends Module {
+  component = null;
+  elements = {};
+  children = {};
+
+  constructor({ component, ...props } = {}) {
+    super(props);
+    this.setComponent(component);
+  }
+
+  get props() {
+    return {
+      text(data) {
+        this.textContent = data;
+      },
+      appendTo(data) {
+        this.append(data);
+      },
+      href(data) {
+        this.href = data;
+      },
+      append(data, self) {
+        data.forEach((el) => {
+          const newEl = self.setViewModel(el);
+          this.append(newEl);
+        });
+      },
+      content(data) {
+        this.innerHTML = "";
+        this.append(data);
+      },
+      style(data) {
+        for (let key in data) {
+          if (typeof this.style[key] !== undefined) {
+            this.style[key] = data[key];
+          }
+        }
+      },
+    };
+  }
+
+  root() {
+    return this.children.root;
   }
 
   $(name) {
-    return this.nameToElement[name];
+    return this.elements[name];
   }
 
-  setNames() {
-    const namedElements = this.template.querySelectorAll("[data-name]");
+  setComponent(component) {
+    if (!component) return;
 
-    if (this.template.dataset.name) {
-      this.nameToElement[this.template.dataset.name] = this.template;
-    }
+    if (component instanceof HTMLElement || component instanceof HTMLDocument) {
+      const elements = component.querySelectorAll("[name]");
 
-    Array.from(namedElements).forEach((el) => {
-      this.nameToElement[el.dataset.name] = el;
-    });
-
-    return this;
-  }
-
-  setStyles() {
-    if (!this.nameToStyle) return;
-
-    for (let elementName in this.nameToStyle) {
-      const styles = this.nameToStyle[elementName];
-
-      for (let styleName in styles) {
-        this.nameToElement[elementName].style[styleName] = styles[styleName];
-      }
-    }
-
-    return this;
-  }
-
-  appendTo(parent) {
-    if (typeof parent === "string") {
-      parent = document.querySelector(parent);
-    }
-
-    if (!parent) {
-      return console.warn("no element found");
-    }
-
-    parent.append(this.template);
-
-    return this;
-  }
-
-  append(names) {
-    for (let key in names) {
-      const element = this.nameToElement[key];
-
-      if (!element) {
-        console.warn("no element in template");
-        continue;
+      if (elements) {
+        Array.from(elements).forEach((el) => {
+          this.children[el.getAttribute("name")] = el;
+        });
       }
 
-      let newChild = names[key];
+      this.children.root = component;
+    } else if (typeof component === "string") {
+    } else {
+      this.children.root = this.setViewModel(component);
+    }
+  }
 
-      if (newChild instanceof HTMLElement) {
-        newChild = new View(newChild);
-      }
+  setViewModel(element) {
+    const tag = Object.keys(element)[0];
+    let component = document.createElement(tag);
 
-      element.append(newChild.template);
+    const elProps = element[tag];
+
+    if (elProps.name) {
+      this.children[elProps.name] = component;
     }
 
-    return this;
+    this.setProps(elProps, component);
+
+    return component;
+  }
+
+  setProps(elProps, component) {
+    for (let propName in elProps) {
+      if (this.props[propName] && elProps[propName]) {
+        this.props[propName].call(component, elProps[propName], this);
+      }
+    }
+  }
+
+  change(elements) {
+    for (let elementName in elements) {
+      const element = this.children[elementName];
+
+      if (element) {
+        this.setProps(elements[elementName], element);
+      }
+    }
   }
 }
-
-export { View };

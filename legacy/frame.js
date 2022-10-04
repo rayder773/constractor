@@ -1,58 +1,80 @@
-export class Frame {
-  _modules = null;
-  _events = {};
+import { Module } from "./Module.js";
 
-  constructor({ modules = {} } = {}) {
-    this.modules = modules;
+export class Frame extends Module {
+  modules = {};
+  connector = {};
+  events = {};
+  exportEvents = null;
+
+  constructor({ modules, connector, exportEvents, ...props } = {}) {
+    super(props);
+    this.setModules(modules);
+    this.setConnector(connector);
+    this.setExportEvents(exportEvents);
   }
 
-  set modules(modules) {
-    this._modules = modules;
-    for (let key in modules) {
-      let m = modules[key]();
+  setExportEvents(events) {
+    if (events) {
+      this.exportEvents = events;
+    }
+  }
 
-      m.frame = this;
+  setModules(modules) {
+    if (modules) {
+      for (let name in modules) {
+        const module = modules[name];
 
-      this._modules[key] = m;
+        module.setParent(this);
 
-      for (let eventName in m.listen) {
-        this.setEvent(eventName, m);
-      }
-
-      while (m.modules) {
-        const modulesCopy = m.modules;
-        for (let key in modulesCopy) {
-          m = m.modules[key]();
-          m.frame = this;
-          this._modules[key] = m;
-
-          for (let eventName in m.listen) {
-            this.setEvent(eventName, m);
-          }
+        for (let name in module.subscribeTo) {
+          this.events[name] = {
+            module,
+            cb: module.subscribeTo[name],
+          };
         }
       }
+
+      this.modules = modules;
     }
   }
 
-  setModule(name, module) {
-    this._modules[name] = module;
+  setConnector(connector) {
+    if (connector) {
+      this.connector = connector;
+    }
   }
 
-  setEvent(event, module) {
-    if (!this._events[event]) {
-      this._events[event] = [];
+  start(modules = this.modules) {
+    for (let moduleName in modules) {
+      if (modules[moduleName].modules) {
+        this.start(modules[moduleName].modules);
+      }
+      modules[moduleName].append();
     }
+  }
 
-    this._events[event].push(module);
+  finish(modules = this.modules) {
+    for (let moduleName in modules) {
+      if (modules[moduleName].modules) {
+        this.finish(modules[moduleName].modules);
+      }
+      modules[moduleName].remove();
+    }
   }
 
   trigger(eventName, data) {
-    if (this._events[eventName] && Array.isArray(this._events[eventName])) {
-      this._events[eventName].forEach((el) => {
-        if (el.listen && el.listen[eventName]) {
-          el.listen[eventName].call(el, data);
-        }
-      });
+    let events = this.connector[eventName];
+
+    if (!events) return;
+
+    if (!Array.isArray(events)) {
+      events = [events];
     }
+
+    events.forEach((e) => {
+      if (this.events[e]) {
+        this.events[e].cb.call(this.events[e].module, data);
+      }
+    });
   }
 }

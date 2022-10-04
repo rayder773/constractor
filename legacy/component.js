@@ -1,42 +1,16 @@
-class Component {
-  constructor({ view, commands, models, systemEvents }) {
-    this.view = view;
-    this.commands = commands;
-    this.models = models;
-    this.systemEvents = systemEvents;
-
-    this.setCommands();
+export class Component {
+  children = null;
+  constructor({ children } = {}) {
+    this.setChildren(children);
   }
 
-  setCommands() {
-    const html = document.documentElement;
+  setChildren(children) {
+    if (children) {
+      children.forEach((c) => {
+        c.setParent(this);
+      });
 
-    for (let elementName in this.commands) {
-      const element = this.view.$(elementName);
-      element.component = this;
-
-      if (!element.events) {
-        element.events = {};
-      }
-
-      const events = this.commands[elementName];
-
-      for (let eventName in events) {
-        element.events[eventName] = events[eventName];
-
-        if (!html.events.includes(eventName)) {
-          html.events.push(eventName);
-          html.addEventListener(eventName, (e) => {
-            const systemEvents = e.target.events;
-
-            if (!systemEvents && !systemEvents?.[eventName]) return;
-
-            this.systemEvents[systemEvents[eventName]](this.models);
-          });
-        }
-      }
+      this.children = children;
     }
   }
 }
-
-export { Component };
