@@ -16,7 +16,7 @@ export class Controller {
   }
 
   initSystemEvents() {
-    this.component.subscribe(this.systemEvents, this.child);
+    this.component.subscribe(this.systemEvents, this);
   }
 
   setSystemEvents(systemEvents) {
@@ -26,4 +26,12 @@ export class Controller {
   }
 
   setChild(child) {}
+
+  ring(radio) {
+    this.component.ring(radio);
+  }
+
+  change(data) {
+    this.child.change(data);
+  }
 }

@@ -3,21 +3,57 @@ import { getObjectKey } from "./utils.js";
 export class Component {
   controllers = null;
   channels = {};
+  components = null;
+  parent = null;
+  hooks = null;
 
-  constructor({ controllers } = {}) {
-    // this.setModules(modules);
+  constructor({ controllers, components, hooks, channels } = {}) {
+    this.setChannels(channels);
     this.setControllers(controllers);
+    this.setComponents(components);
+    this.setHooks(hooks);
   }
 
-  // setModules(modules) {
-  //   if (modules) {
-  //     for (let name in modules) {
-  //       modules[name] = modules[name]();
-  //     }
+  setChannels(channels) {
+    if (channels) {
+      this.channels = channels;
+    }
+  }
 
-  //     this.modules = modules;
-  //   }
-  // }
+  setHooks(hooks) {
+    if (hooks) {
+      this.hooks = hooks;
+
+      if (hooks.append) {
+        hooks.append.call(this);
+      }
+    }
+  }
+
+  setParent(parent) {
+    if (parent) {
+      this.parent = parent;
+    }
+  }
+
+  setChannels(channels) {
+    if (channels) {
+      this.channels = channels;
+    }
+  }
+
+  setComponents(components) {
+    if (components) {
+      for (let name in components) {
+        if (typeof components[name] === "function") {
+          components[name] = components[name]({ channels: this.channels });
+          components[name].setParent(this);
+        }
+      }
+
+      this.components = components;
+    }
+  }
 
   setControllers(controllers) {
     if (controllers) {

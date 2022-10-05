@@ -29,7 +29,7 @@ export class ModelController extends Controller {
     for (let modelEventName in this.modelChanges) {
       for (let fieldName in this.modelChanges[modelEventName]) {
         if (this.child.data[fieldName] !== undefined) {
-          console.log(11);
+          // console.log(11);
         }
       }
       // change: {

@@ -22,7 +22,7 @@ export class View extends Child {
       },
       append(data, self) {
         data.forEach((el) => {
-          const newEl = self.setViewModel(el);
+          const newEl = self._setViewModel(el);
           this.append(newEl);
         });
       },
