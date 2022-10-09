@@ -21,6 +21,9 @@ export class View extends Child {
         this.href = data;
       },
       append(data, self) {
+        if (!Array.isArray(data)) {
+          data = [data];
+        }
         data.forEach((el) => {
           const newEl = self._setViewModel(el);
           this.append(newEl);

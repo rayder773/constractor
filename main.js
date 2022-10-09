@@ -10,15 +10,6 @@ function documentViewController() {
     child: {
       component: document,
     },
-    userEvents: {
-      root: {
-        click() {
-          this.ring({
-            global: ["changeTitle"],
-          });
-        },
-      },
-    },
     systemEvents: {
       global: {
         renderBody(data) {
@@ -40,23 +31,6 @@ function documentModelController() {
         title: 0,
       },
     },
-    // systemEvents: {
-    //   global: {
-    //     changeTitle() {
-    //       this.change({
-    //         title: this.data.title + 1,
-    //       });
-    //     },
-    //   },
-    // },
-    modelChanges: {
-      change: {
-        title(data) {
-          console.log("this", this);
-          console.log("data", data);
-        },
-      },
-    },
   });
 }
 
@@ -65,7 +39,18 @@ function pagesViewController() {
     child: {
       component: {
         div: {
-          name: "pageTabs",
+          append: [
+            {
+              div: {
+                name: "pageTabs",
+              },
+            },
+            {
+              div: {
+                name: "pages",
+              },
+            },
+          ],
         },
       },
     },
@@ -100,14 +85,23 @@ function pageTabsViewController() {
     child: {
       component: {
         div: {
+          style: {
+            display: "flex",
+          },
           append: [
             {
               ul: {
                 name: "pageList",
+                style: {
+                  display: "flex",
+                },
               },
             },
             {
               button: {
+                style: {
+                  width: "40px",
+                },
                 text: "+",
                 name: "addPage",
               },
@@ -136,6 +130,24 @@ function pageTabsViewController() {
             ],
           });
         },
+        newPageWasAdded(data) {
+          console.log(data);
+          this.change({
+            pageList: {
+              append: {
+                li: {
+                  append: [
+                    {
+                      button: {
+                        text: data.newElement.name,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        },
       },
     },
   });
@@ -155,6 +167,7 @@ function pagesComponent(params) {
     ...params,
   });
 }
+
 function builderViewController() {
   return new ViewController({
     child: {
@@ -229,10 +242,23 @@ function builderModelController() {
     },
     systemEvents: {
       builderPages: {
-        newPage(data) {
-          // this.change
-          // console.log(this.child);
-          // console.log(data);
+        newPage() {
+          this.child.change({
+            pages: {
+              addToArray: {
+                name: "new page",
+              },
+            },
+          });
+        },
+      },
+    },
+    childChanges: {
+      pages: {
+        addToArray(data) {
+          this.ring({
+            builderPages: [{ newPageWasAdded: data }],
+          });
         },
       },
     },
@@ -259,4 +285,4 @@ const documentComponent = new Component({
   },
 });
 
-// console.log(documentComponent);
+window.documentComponent = documentComponent;

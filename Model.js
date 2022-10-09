@@ -9,48 +9,39 @@ export class Model extends Child {
     this.set(data);
   }
 
-  change(values) {
-    for (let name in values) {
-      if (!this.data[name]) {
-        throw new Error("");
-      }
-
-      this.data[name] = values[name];
-      this.notify({ change: name });
-    }
+  get props() {
+    return {
+      addToArray({ fieldName, data }) {
+        if (!Array.isArray(this.data[fieldName])) {
+          throw new Error("must be array");
+        }
+        this.data[fieldName].push(data);
+        this.controller.notify({
+          methodName: "addToArray",
+          fieldName,
+          dataInfo: {
+            newElement: data,
+          },
+        });
+      },
+    };
   }
 
-  pushToArray(field, element) {
-    if (!this.data[field] || !Array.isArray(this.data[field])) {
-      throw new Error(``);
+  change(values) {
+    for (let fieldName in values) {
+      for (let methodName in values[fieldName]) {
+        const data = values[fieldName][methodName];
+        if (data && this.data[fieldName]) {
+          this.props[methodName].call(this, { fieldName, data });
+        }
+      }
     }
-
-    this.data[field].push(element);
-    this.notify({ pushToArray: field });
   }
 
   set(data) {
     if (!data) {
       throw new Error(``);
     }
-
     this.data = data;
-    this.notify({ set: "data" });
   }
-
-  notify(event) {
-    // this.controller.trigger();
-    // const listeners = this.listeners[event];
-    // if (listeners) {
-    //   listeners.forEach((cb) => cb(this.data));
-    // }
-  }
-
-  // listen(event, cb) {
-  //   if (!this.listeners[event]) {
-  //     this.listeners[event] = [];
-  //   }
-
-  //   this.listeners[event].push(cb);
-  // }
 }

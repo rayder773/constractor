@@ -1,11 +1,19 @@
 export class Controller {
   systemEvents = {};
+  childChanges = {};
   component = null;
   child = null;
 
-  constructor({ child, systemEvents } = {}) {
+  constructor({ child, systemEvents, childChanges } = {}) {
     this.setChild(child);
     this.setSystemEvents(systemEvents);
+    this.setChildChanges(childChanges);
+  }
+
+  setChildChanges(childChanges) {
+    if (childChanges) {
+      this.childChanges = childChanges;
+    }
   }
 
   setComponent(component) {
@@ -33,5 +41,15 @@ export class Controller {
 
   change(data) {
     this.child.change(data);
+  }
+
+  notify(data) {
+    const { methodName, fieldName, dataInfo } = data;
+
+    if (this.childChanges[fieldName]) {
+      if (this.childChanges[fieldName][methodName]) {
+        this.childChanges[fieldName][methodName].call(this, dataInfo);
+      }
+    }
   }
 }
