@@ -39,6 +39,9 @@ function pagesViewController() {
     child: {
       component: {
         div: {
+          style: {
+            height: "100%",
+          },
           append: [
             {
               div: {
@@ -48,11 +51,22 @@ function pagesViewController() {
             {
               div: {
                 name: "pages",
+                style: {
+                  height: "100%",
+                },
               },
             },
           ],
         },
       },
+    },
+    userEvents: {
+      pages: {
+        click(e) {
+          // const uid = e.target.uid;
+          // console.log(11);
+        }
+      }
     },
     systemEvents: {
       global: {
@@ -72,6 +86,13 @@ function pagesViewController() {
           this.change({
             pageTabs: {
               content: data,
+            },
+          });
+        },
+        changeActivePage(data) {
+          this.change({
+            pages: {
+              contentModel: data.model.pages[data.newValue].gridView,
             },
           });
         },
@@ -118,6 +139,14 @@ function pageTabsViewController() {
           });
         },
       },
+      pageList: {
+        click(e) {
+          const index = Array.from(e.currentTarget.children).indexOf(e.target);
+          this.ring({
+            builderPages: [{ setNewActivePage: index }],
+          });
+        },
+      },
     },
     systemEvents: {
       builderPages: {
@@ -131,18 +160,41 @@ function pageTabsViewController() {
           });
         },
         newPageWasAdded(data) {
-          console.log(data);
           this.change({
             pageList: {
               append: {
                 li: {
+                  style: {
+                    border: "1px solid",
+                  },
                   append: [
                     {
                       button: {
+                        style: {
+                          pointerEvents: "none",
+                        },
                         text: data.newElement.name,
                       },
                     },
                   ],
+                },
+              },
+            },
+          });
+        },
+        changeActivePage(data) {
+          this.change({
+            pageList: {
+              childByIndex: {
+                [data.oldValue]: {
+                  style: {
+                    borderColor: "black",
+                  },
+                },
+                [data.newValue]: {
+                  style: {
+                    borderColor: "red",
+                  },
                 },
               },
             },
@@ -238,6 +290,7 @@ function builderModelController() {
     child: {
       data: {
         pages: [],
+        activePageIndex: -1,
       },
     },
     systemEvents: {
@@ -247,7 +300,31 @@ function builderModelController() {
             pages: {
               addToArray: {
                 name: "new page",
+                gridView: {
+                  div: {
+                    style: {
+                      height: "100%",
+                      border: "1px dashed",
+                    },
+                  },
+                },
+                gridModels: [
+                  {
+                    rows: 0,
+                    cols: 0,
+                  },
+                ],
               },
+            },
+            activePageIndex: {
+              set: this.child.data.pages.length,
+            },
+          });
+        },
+        setNewActivePage(data) {
+          this.change({
+            activePageIndex: {
+              set: data,
             },
           });
         },
@@ -258,6 +335,13 @@ function builderModelController() {
         addToArray(data) {
           this.ring({
             builderPages: [{ newPageWasAdded: data }],
+          });
+        },
+      },
+      activePageIndex: {
+        set(data) {
+          this.ring({
+            builderPages: [{ changeActivePage: data }],
           });
         },
       },

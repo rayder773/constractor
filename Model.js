@@ -24,6 +24,19 @@ export class Model extends Child {
           },
         });
       },
+      set({ fieldName, data }) {
+        this.controller.notify({
+          methodName: "set",
+          fieldName,
+          dataInfo: {
+            oldValue: this.data[fieldName],
+            newValue: data,
+            model: this.data,
+          },
+        });
+
+        this.data[fieldName] = data;
+      },
     };
   }
 
@@ -31,7 +44,7 @@ export class Model extends Child {
     for (let fieldName in values) {
       for (let methodName in values[fieldName]) {
         const data = values[fieldName][methodName];
-        if (data && this.data[fieldName]) {
+        if (data !== undefined && this.data[fieldName] !== undefined) {
           this.props[methodName].call(this, { fieldName, data });
         }
       }

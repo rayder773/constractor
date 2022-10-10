@@ -33,6 +33,18 @@ export class View extends Child {
         this.innerHTML = "";
         this.append(data);
       },
+      contentModel(data, self) {
+        this.innerHTML = "";
+        const newEl = self._setViewModel(data);
+        this.append(newEl);
+      },
+      childByIndex(data, self) {
+        for (let index in data) {
+          if (this.children[index] && data[index]) {
+            self._setProps(data[index], this.children[index]);
+          }
+        }
+      },
       title(data) {
         this.title = data;
       },
