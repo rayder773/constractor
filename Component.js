@@ -1,69 +1,174 @@
 import { getObjectKey } from "./utils.js";
 
 export class Component {
-  controllers = null;
-  channels = {};
-  components = null;
-  parent = null;
-  hooks = null;
+  controllers = [];
 
-  constructor({ controllers, components, hooks, channels } = {}) {
-    this.setChannels(channels);
+  entities = {};
+
+  channels = {};
+  parent = null;
+
+  //как хранить компоненты
+  //вариант 1 в {}
+  components = [];
+  //вариант 2 в []
+  // componentsArr = [];
+
+  constructor({ controllers, components, systemEvents } = {}) {
+    // this.setChannels(channels);
     this.setControllers(controllers);
     this.setComponents(components);
-    this.setHooks(hooks);
+    // this.setHooks(hooks);
+    this.setSystemEvents(systemEvents);
   }
 
-  setChannels(channels) {
-    if (channels) {
-      this.channels = channels;
+  // addComponent(component) {
+  //   if (component) {
+  //     component = component();
+  //     component.setParent(this);
+  //     component.addChannels(this.channels);
+  //     this.componentsArr.push(component);
+  //   }
+  // }
+
+  // addControllers(controllers) {
+  //   for (let name in controllers) {
+  //     if (this.controllers[name]) {
+  //       throw new Error(`controller with name ${name} already exists`);
+  //     } else {
+  //       const c = controllers[name]();
+  //       c.setComponent(this);
+  //       this.ring({ system: [`${name}:append`] });
+  //     }
+  //   }
+  //   // if(this.c)
+  // }
+
+  // addChannels(channels) {
+  //   if (channels) {
+  //     Object.assign(this.channels, channels);
+  //   }
+  // }
+
+  // initSystemEvents() {
+  //   if (this.systemEvents) {
+  //     this.subscribe(this.systemEvents, this);
+  //   }
+  // }
+
+  setSystemEvents(systemEvents) {
+    if (systemEvents) {
+      this.subscribe(systemEvents, this);
     }
   }
 
-  setHooks(hooks) {
-    if (hooks) {
-      this.hooks = hooks;
+  // setChannels(channels) {
+  //   if (channels) {
+  //     this.channels = channels;
+  //   }
+  // }
 
-      if (hooks.append) {
-        hooks.append.call(this);
-      }
-    }
+  // setHooks(hooks) {
+  //   if (hooks) {
+  //     this.hooks = hooks;
+  //   }
+  // }
+
+  // initHooks() {
+  //   if (this.hooks.append) {
+  //     this.hooks.append.call(this);
+  //   }
+  // }
+  // setParent(parent) {
+  //   if (parent) {
+  //     this.parent = parent;
+  //     this.start();
+  //   }
+  // }
+
+  start() {
+    this.initControllers();
+    this.initComponents();
+    // this.initHooks();
+    // this.initSystemEvents();
   }
 
-  setParent(parent) {
-    if (parent) {
-      this.parent = parent;
-    }
-  }
+  // setChannels(channels) {
+  //   if (channels) {
+  //     this.channels = channels;
+  //   }
+  // }
 
-  setChannels(channels) {
-    if (channels) {
-      this.channels = channels;
-    }
-  }
+  // initComponents() {
+  //   if (!this.components) return;
+
+  //   for (let name in this.components) {
+  //     if (typeof this.components[name] === "function") {
+  //       this.components[name] = this.components[name]();
+  //       this.components[name].addChannels(this.channels);
+  //       this.components[name].setParent(this);
+  //     }
+  //   }
+  // }
 
   setComponents(components) {
     if (components) {
-      for (let name in components) {
-        if (typeof components[name] === "function") {
-          components[name] = components[name]({ channels: this.channels });
-          components[name].setParent(this);
-        }
-      }
-
       this.components = components;
     }
   }
 
+  initComponents() {
+    if (!this.components) return;
+
+    this.components.forEach((component) => {
+      if (typeof component === "function") {
+        this.addEntities(component);
+      }
+    });
+
+    delete this.component;
+  }
+
+  initControllers() {
+    if (!this.controllers) return;
+
+    this.controllers.forEach((controller) => {
+      if (typeof controller === "function") {
+        this.addEntities(controller);
+      }
+    });
+
+    delete this.controllers;
+  }
+
+  addEntities(entities) {
+    if (!entities) return;
+
+    if (!Array.isArray(entities)) {
+      entities = [entities];
+    }
+
+    entities.forEach((entity) => {
+      entity = entity();
+
+      const lastId =
+        Object.keys(this.entities)[Object.keys(this.entities).length - 1] || -1;
+
+      const newId = parseInt(lastId) + 1;
+
+      entity.setComponent(this);
+      entity.setId(newId);
+
+      if (entity.types) {
+        entity.types.forEach((type) => {
+          this.ring({ system: [{ [`${type}:append`]: entity }] });
+        });
+      }
+    });
+  }
+
   setControllers(controllers) {
     if (controllers) {
-      for (let name in controllers) {
-        if (typeof controllers[name] === "function") {
-          controllers[name] = controllers[name]();
-          controllers[name].setComponent(this);
-        }
-      }
-
       this.controllers = controllers;
     }
   }

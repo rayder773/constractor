@@ -15,7 +15,15 @@ export class Model extends Child {
         if (!Array.isArray(this.data[fieldName])) {
           throw new Error("must be array");
         }
+
+        if (!this.data[`${fieldName}:counter`]) {
+          this.data[`${fieldName}:counter`] = 1;
+        } else {
+          this.data[`${fieldName}:counter`] += 1;
+        }
+
         this.data[fieldName].push(data);
+
         this.controller.notify({
           methodName: "addToArray",
           fieldName,
@@ -23,6 +31,27 @@ export class Model extends Child {
             newElement: data,
           },
         });
+      },
+      addToObject({ fieldName, data }) {
+        let counter = this.data[fieldName].counter;
+
+        if (!counter) {
+          counter = 1;
+        } else {
+          counter++;
+        }
+
+        this.data[fieldName][counter] = data;
+
+        this.controller.notify({
+          methodName: "addToObject",
+          fieldName,
+          dataInfo: {
+            newElement: { id: counter, ...data },
+          },
+        });
+
+        this.data[fieldName].counter = counter;
       },
       set({ fieldName, data }) {
         this.controller.notify({
