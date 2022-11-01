@@ -1,6 +1,8 @@
+import { Component } from "../Component.js";
 import { ModelController } from "../ModelController.js";
-import { NAME } from "../names.js";
 import { ViewController } from "../ViewController.js";
+
+const name = "builderPage";
 
 function builderViewController() {
   return new ViewController({
@@ -95,16 +97,12 @@ function builderViewController() {
       },
     },
     systemEvents: {
-      global: {
-        askForBuilderPage() {
-          this.ring({
-            global: [
-              {
-                renderBody: this.child.root,
-              },
-            ],
-          });
+      system: {
+        ["builderPage:start"]() {
+          console.log("start");
         },
+      },
+      global: {
         renderPages(data) {
           this.change({
             pages: {
@@ -128,7 +126,10 @@ function builderModelController() {
   });
 }
 
-export const builderControllers = [
-  builderViewController,
-  builderModelController,
-];
+export function builderPageComponent() {
+  return new Component({
+    types: [name],
+    controllers: [builderViewController, builderModelController],
+    channels: [name],
+  });
+}

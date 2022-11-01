@@ -1,6 +1,7 @@
 import { ViewController } from "../ViewController.js";
 import { ModelController } from "../ModelController.js";
 import { NAME } from "../names.js";
+import { Component } from "../Component.js";
 
 function documentViewController() {
   return new ViewController({
@@ -8,14 +9,10 @@ function documentViewController() {
     child: {
       component: document,
     },
-    systemEvents: {
-      global: {
-        renderBody(data) {
-          this.change({
-            body: {
-              content: data,
-            },
-          });
+    globalEvents: {
+      render: {
+        newPage(data) {
+          this.app.addEntity(data);
         },
       },
     },
@@ -32,7 +29,8 @@ function documentModelController() {
   });
 }
 
-export const documentControllers = [
-  documentViewController,
-  documentModelController,
-];
+export function documentComponent() {
+  return new Component({
+    children: [documentViewController, documentModelController],
+  });
+}

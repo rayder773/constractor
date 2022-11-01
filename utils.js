@@ -4,4 +4,12 @@ function getObjectKey(obj) {
   }
 }
 
-export { getObjectKey };
+const defaultEvents = {
+  viewChange: {},
+  dataChange: {},
+  componentStarted: {},
+  componentAppended: {},
+  controllerAppended: {},
+};
+
+export { getObjectKey, defaultEvents };
