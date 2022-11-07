@@ -6,9 +6,8 @@ export function routerController() {
     globalEvents: {
       system: {
         "app:started"() {
-          this.globalRing({
-            render: { newPage: builderPageComponent },
-          });
+          // debugger;
+          this.addEntity(builderPageComponent);
         },
       },
     },

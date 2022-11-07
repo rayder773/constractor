@@ -6,17 +6,23 @@ export class Entity {
   app = null;
 
   globalEvents = {};
-  localEvents = {};
+  bubbleEvents = {};
 
-  constructor({ globalEvents, localEvents, types }) {
+  constructor({ globalEvents, types, bubbleEvents }) {
     this.setGlobalEvents(globalEvents);
-    this.setLocalEvents(localEvents);
     this.setTypes(types);
+    this.setBubbleEvents(bubbleEvents);
   }
 
   addInfo(newInfo) {
     if (!newInfo) return;
     this.info.push(newInfo);
+  }
+
+  setBubbleEvents(bubbleEvents) {
+    if (!bubbleEvents) return;
+
+    this.bubbleEvents = bubbleEvents;
   }
 
   setParent(parent) {
@@ -52,17 +58,35 @@ export class Entity {
     }
   }
 
-  setLocalEvents(localEvents) {
-    if (localEvents) {
-      Object.assign(this.localEvents, localEvents);
+  start() {
+    if (this.types) {
+      this.types.forEach((t) => {
+        this.globalRing({ system: { [`${t}:started`]: this } });
+      });
     }
   }
-
-  start() {}
 
   globalRing(radio) {
     if (this.app) {
       this.app.globalRing(radio);
+    }
+  }
+
+  addEntity(entity) {
+    if (this.app) {
+      this.app.addEntity(entity);
+    }
+  }
+
+  applyBubbles(entity) {
+    if (entity.parent) {
+      this.applyBubbles(entity.parent);
+    }
+  }
+
+  bubble(events) {
+    for (let name in events) {
+      this.applyBubbles(this);
     }
   }
 }

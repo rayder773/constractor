@@ -2,8 +2,6 @@ import { Component } from "../Component.js";
 import { ModelController } from "../ModelController.js";
 import { ViewController } from "../ViewController.js";
 
-const name = "builderPage";
-
 function builderViewController() {
   return new ViewController({
     child: {
@@ -96,17 +94,17 @@ function builderViewController() {
         },
       },
     },
-    systemEvents: {
-      system: {
-        ["builderPage:start"]() {
-          console.log("start");
-        },
+    bubbleEvents: {
+      parentStarted() {
+        this.globalRing({ render: { append: this.child.root } });
       },
-      global: {
-        renderPages(data) {
+    },
+    globalEvents: {
+      render: {
+        appendTabs(content) {
           this.change({
-            pages: {
-              content: data,
+            pageList: {
+              content,
             },
           });
         },
@@ -126,10 +124,30 @@ function builderModelController() {
   });
 }
 
+function pageTabsViewController() {
+  return new ViewController({
+    child: {
+      component: {
+        div: {
+          text: "pageTabsView",
+        },
+      },
+    },
+    bubbleEvents: {
+      parentStarted() {
+        this.globalRing({ render: { append: this.child.root } });
+      },
+    },
+  });
+}
+
 export function builderPageComponent() {
   return new Component({
-    types: [name],
-    controllers: [builderViewController, builderModelController],
-    channels: [name],
+    types: ["page", "builderPage"],
+    children: [
+      builderViewController,
+      builderModelController,
+      pageTabsViewController,
+    ],
   });
 }

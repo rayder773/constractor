@@ -49,6 +49,8 @@ export class App {
 
     this.childrenById[id] = entity;
 
+    entity.start();
+
     return entity;
   }
 
@@ -57,10 +59,8 @@ export class App {
 
     this.children.forEach((child) => {
       child = this.addEntity(child);
-      child.start();
+      // child.start();
     });
-
-    // debugger;
 
     this.globalRing({ system: "app:started" });
 
@@ -99,6 +99,5 @@ export class App {
         }
       });
     }
-    // debugger;
   }
 }

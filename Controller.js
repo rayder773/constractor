@@ -8,8 +8,6 @@ export class Controller extends Entity {
     this.setChild(child);
   }
 
-  setChild(child) {}
-
   ring(radio) {
     this.parent.ring(radio);
   }
@@ -17,4 +15,6 @@ export class Controller extends Entity {
   change(data) {
     this.child.change(data);
   }
+
+  setChild() {}
 }

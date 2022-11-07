@@ -11,8 +11,12 @@ function documentViewController() {
     },
     globalEvents: {
       render: {
-        newPage(data) {
-          this.app.addEntity(data);
+        updateBody(content) {
+          this.change({
+            body: {
+              content,
+            },
+          });
         },
       },
     },
