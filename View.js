@@ -66,12 +66,6 @@ export class View extends Child {
     return this.children[name];
   }
 
-  _setUserEvents(events) {
-    for (const name in events) {
-      window.addEventListener(name, (e) => {});
-    }
-  }
-
   _setComponent(component) {
     if (!component) return;
 

@@ -3,13 +3,16 @@ import { Entity } from "./Entity.js";
 export class Controller extends Entity {
   child = null;
 
-  constructor({ child, ...props } = {}) {
+  constructor({ child, commands, ...props } = {}) {
     super(props);
     this.setChild(child);
+    this.setCommands(commands);
   }
 
-  ring(radio) {
-    this.parent.ring(radio);
+  setCommands(commands) {
+    if (!commands) return;
+
+    this.commands = commands;
   }
 
   change(data) {

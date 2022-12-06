@@ -1,5 +1,4 @@
 import { Entity } from "./Entity.js";
-import { defaultEvents, getObjectKey } from "./utils.js";
 
 export class Component extends Entity {
   children = [];

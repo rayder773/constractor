@@ -1,4 +1,5 @@
 import { Component } from "../Component.js";
+import { Component1 } from "../Component1.js";
 import { ModelController } from "../ModelController.js";
 import { ViewController } from "../ViewController.js";
 
@@ -37,34 +38,6 @@ function builderViewController() {
                         {
                           div: {
                             name: "pageTabs",
-                            append: [
-                              {
-                                div: {
-                                  style: {
-                                    display: "flex",
-                                  },
-                                  append: [
-                                    {
-                                      ul: {
-                                        name: "pageList",
-                                        style: {
-                                          display: "flex",
-                                        },
-                                      },
-                                    },
-                                    {
-                                      button: {
-                                        style: {
-                                          width: "40px",
-                                        },
-                                        text: "+",
-                                        name: "addPage",
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                            ],
                           },
                         },
                         {
@@ -94,20 +67,15 @@ function builderViewController() {
         },
       },
     },
-    bubbleEvents: {
-      parentStarted() {
-        this.globalRing({ render: { append: this.child.root } });
+    listen: {
+      appendBuilderPageComponent(data) {
+        this.ask("askForRender", {
+          parent: this.child.$(data.name),
+          child: data.html,
+        });
       },
-    },
-    globalEvents: {
-      render: {
-        appendTabs(content) {
-          this.change({
-            pageList: {
-              content,
-            },
-          });
-        },
+      sendPageForRender() {
+        this.ask("newPageAdded", this.child.root);
       },
     },
   });
@@ -116,10 +84,7 @@ function builderViewController() {
 function builderModelController() {
   return new ModelController({
     child: {
-      data: {
-        pages: {},
-        activePageId: null,
-      },
+      data: {},
     },
   });
 }
@@ -129,25 +94,57 @@ function pageTabsViewController() {
     child: {
       component: {
         div: {
-          text: "pageTabsView",
+          style: {
+            display: "flex",
+          },
+          append: [
+            {
+              ul: {
+                name: "pageList",
+                style: {
+                  display: "flex",
+                },
+              },
+            },
+            {
+              button: {
+                style: {
+                  width: "40px",
+                },
+                text: "+",
+                name: "addPage",
+              },
+            },
+          ],
         },
       },
     },
-    bubbleEvents: {
-      parentStarted() {
-        this.globalRing({ render: { append: this.child.root } });
+    listen: {
+      createPleasePage() {
+        this.ask("gatherBuilderPage", {
+          name: "pageTabs",
+          html: this.child.root,
+        });
       },
     },
   });
 }
 
 export function builderPageComponent() {
-  return new Component({
-    types: ["page", "builderPage"],
+  return new Component1({
     children: [
       builderViewController,
       builderModelController,
       pageTabsViewController,
     ],
+    proxy: {
+      gatherBuilderPage: "appendBuilderPageComponent",
+    },
+    hooks: {
+      onStarted() {
+        this.tell("createPleasePage");
+        this.tell("sendPageForRender");
+      },
+    },
   });
 }

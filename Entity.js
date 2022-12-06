@@ -1,28 +1,23 @@
+import { toCapitalCase } from "./utils.js";
+
 export class Entity {
-  parent = null;
-  id = null;
-  types = [];
-  info = [];
-  app = null;
+  listen = {};
 
-  globalEvents = {};
-  bubbleEvents = {};
-
-  constructor({ globalEvents, types, bubbleEvents }) {
-    this.setGlobalEvents(globalEvents);
-    this.setTypes(types);
-    this.setBubbleEvents(bubbleEvents);
+  constructor({ hooks, listen } = {}) {
+    this.setHooks(hooks);
+    this.setListen(listen);
   }
 
-  addInfo(newInfo) {
-    if (!newInfo) return;
-    this.info.push(newInfo);
+  setListen(listen) {
+    if (!listen) return;
+
+    this.listen = listen;
   }
 
-  setBubbleEvents(bubbleEvents) {
-    if (!bubbleEvents) return;
+  setHooks(hooks) {
+    if (!hooks) return;
 
-    this.bubbleEvents = bubbleEvents;
+    this.hooks = hooks;
   }
 
   setParent(parent) {
@@ -31,62 +26,18 @@ export class Entity {
     }
   }
 
-  setApp(app) {
-    if (app) {
-      this.app = app;
-    }
-  }
-
-  setTypes(types) {
-    if (types) {
-      if (!Array.isArray(types)) {
-        types = [types];
-      }
-      this.types = types;
-    }
-  }
-
-  setId(id) {
-    if (typeof id !== "undefined") {
-      this.id = id;
-    }
-  }
-
-  setGlobalEvents(globalEvents) {
-    if (globalEvents) {
-      Object.assign(this.globalEvents, globalEvents);
+  ask(...props) {
+    if (this.parent) {
+      this.parent.ask(...props);
     }
   }
 
   start() {
-    if (this.types) {
-      this.types.forEach((t) => {
-        this.globalRing({ system: { [`${t}:started`]: this } });
-      });
-    }
-  }
-
-  globalRing(radio) {
-    if (this.app) {
-      this.app.globalRing(radio);
-    }
-  }
-
-  addEntity(entity) {
-    if (this.app) {
-      this.app.addEntity(entity);
-    }
-  }
-
-  applyBubbles(entity) {
-    if (entity.parent) {
-      this.applyBubbles(entity.parent);
-    }
-  }
-
-  bubble(events) {
-    for (let name in events) {
-      this.applyBubbles(this);
+    if (this.hooks?.onStarted) {
+      if (typeof this.hooks.onStarted === "string") {
+      } else if (typeof this.hooks.onStarted === "function") {
+        typeof this.hooks.onStarted.call(this);
+      }
     }
   }
 }
