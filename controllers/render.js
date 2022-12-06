@@ -1,4 +1,4 @@
-import { Controller } from "../Controller.js";
+import { Controller } from "../core/Controller.js";
 
 export function renderController() {
   return new Controller({

@@ -1,6 +1,6 @@
 import { Entity } from "./Entity.js";
 
-export class Component1 extends Entity {
+export class Component extends Entity {
   childrenById = {};
   compose = true;
   proxy = {};

@@ -1,12 +1,22 @@
-import { App } from "./App.js";
-import { documentComponent } from "./components/document.js";
+import { Component } from "./core/Component.js";
+import { DocumentViewController } from "./controllers/document.js";
+import { MainWindowController } from "./controllers/window.js";
+import { RouterComponent } from "./components/router.js";
 import { renderController } from "./controllers/render.js";
-import { routerController } from "./controllers/router.js";
 
-const app = new App({
-  children: [documentComponent, routerController, renderController],
+const appComponent = new Component({
+  proxy: {
+    onHashchange: "choosePage",
+    newPageAdded: "changeBody",
+    askForRender: "render",
+  },
+  children: [
+    DocumentViewController,
+    MainWindowController,
+    RouterComponent,
+    renderController,
+  ],
 });
 
-app.start();
-
-console.log(app);
+appComponent.start();
+appComponent.tell("startApp");

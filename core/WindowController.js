@@ -1,5 +1,5 @@
 import { Controller } from "./Controller.js";
-import { toCapitalCase } from "./utils.js";
+import { toCapitalCase } from "../utils.js";
 
 export class WindowController extends Controller {
   clienEvents = [];

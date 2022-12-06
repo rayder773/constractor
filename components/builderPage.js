@@ -1,7 +1,6 @@
-import { Component } from "../Component.js";
-import { Component1 } from "../Component1.js";
-import { ModelController } from "../ModelController.js";
-import { ViewController } from "../ViewController.js";
+import { Component } from "../core/Component.js";
+import { ModelController } from "../core/ModelController.js";
+import { ViewController } from "../core/ViewController.js";
 
 function builderViewController() {
   return new ViewController({
@@ -131,7 +130,7 @@ function pageTabsViewController() {
 }
 
 export function builderPageComponent() {
-  return new Component1({
+  return new Component({
     children: [
       builderViewController,
       builderModelController,

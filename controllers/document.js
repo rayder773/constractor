@@ -1,4 +1,4 @@
-import { ViewController } from "../ViewController.js";
+import { ViewController } from "../core/ViewController.js";
 
 export function DocumentViewController() {
   return new ViewController({

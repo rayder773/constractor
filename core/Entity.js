@@ -1,4 +1,4 @@
-import { toCapitalCase } from "./utils.js";
+import { toCapitalCase } from "../utils.js";
 
 export class Entity {
   listen = {};

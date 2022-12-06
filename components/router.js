@@ -1,7 +1,7 @@
-import { Component1 } from "../Component1.js";
+import { Component } from "../core/Component.js";
 import { builderPageComponent } from "./builderPage.js";
-import { Controller } from "../Controller.js";
-import { ModelController } from "../ModelController.js";
+import { Controller } from "../core/Controller.js";
+import { ModelController } from "../core/ModelController.js";
 
 export function RouterController() {
   return new Controller({
@@ -27,7 +27,7 @@ function RouterModel() {
 }
 
 export function RouterComponent() {
-  return new Component1({
+  return new Component({
     children: [RouterController, RouterModel],
     listen: {
       addPage(page) {
