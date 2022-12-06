@@ -41,6 +41,7 @@ function builderViewController() {
                         },
                         {
                           div: {
+                            name: "pages",
                             style: {
                               display: "grid",
                               gridTemplateRows: "max-content 1fr",
@@ -76,6 +77,12 @@ function builderViewController() {
       sendPageForRender() {
         this.ask("newPageAdded", this.child.root);
       },
+      changeViewsWithNewPage(data) {
+        this.ask("askForRender", {
+          parent: this.child.$("pages"),
+          child: data.name,
+        });
+      },
     },
   });
 }
@@ -83,7 +90,23 @@ function builderViewController() {
 function builderModelController() {
   return new ModelController({
     child: {
-      data: {},
+      data: {
+        pages: [],
+      },
+    },
+    onChange: {
+      pages: {
+        addToArray: "newPageInModel",
+      },
+    },
+    listen: {
+      addPlus() {
+        this.change({
+          pages: {
+            addToArray: { name: "new page" },
+          },
+        });
+      },
     },
   });
 }
@@ -112,6 +135,9 @@ function pageTabsViewController() {
                 },
                 text: "+",
                 name: "addPage",
+                event: {
+                  click: "onPlusClick",
+                },
               },
             },
           ],
@@ -123,6 +149,12 @@ function pageTabsViewController() {
         this.ask("gatherBuilderPage", {
           name: "pageTabs",
           html: this.child.root,
+        });
+      },
+      changeViewsWithNewPage(data) {
+        this.ask("askForRender", {
+          parent: this.child.$("pageList"),
+          child: data.name,
         });
       },
     },
@@ -138,6 +170,8 @@ export function builderPageComponent() {
     ],
     proxy: {
       gatherBuilderPage: "appendBuilderPageComponent",
+      onPlusClick: "addPlus",
+      newPageInModel: "changeViewsWithNewPage",
     },
     hooks: {
       onStarted() {

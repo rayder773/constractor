@@ -2,10 +2,17 @@ import { Controller } from "./Controller.js";
 import { View } from "./View.js";
 
 export class ViewController extends Controller {
-  userEvents = {};
+  clientEvents = {};
 
-  constructor({ userEvents, ...props } = {}) {
+  constructor({ clientEvents, ...props } = {}) {
     super(props);
+    this.setClientEvents(clientEvents);
+  }
+
+  setClientEvents(clientEvents) {
+    if (!clientEvents) return;
+
+    this.clientEvents = clientEvents;
   }
 
   setChild(view) {

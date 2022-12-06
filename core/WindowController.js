@@ -26,8 +26,9 @@ export class WindowController extends Controller {
           this.ask(`on${toCapitalCase(eventName)}`, e);
         } else {
           let systemEventName = null;
+
           while (target) {
-            systemEventName = target?.dataset?.event;
+            systemEventName = target?.events?.[eventName];
             if (systemEventName) {
               break;
             } else {
@@ -35,15 +36,11 @@ export class WindowController extends Controller {
             }
           }
           if (systemEventName) {
-            // while (target) {
-            //   if (target.root) {
-            //     break;
-            //   }
-            //   target = target.parentElement;
-            // }
-            // if (typeof target.root === "object") {
-            //   target.root.trigger({ [systemEventName]: {} });
-            // }
+            if (target.view.controller.clientEvents[systemEventName]) {
+              target.view.controller.clientEvents[systemEventName](e);
+            } else {
+              target.view.controller.ask(systemEventName, e);
+            }
           }
         }
       });

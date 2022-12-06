@@ -2,7 +2,6 @@ import { Child } from "./Child.js";
 
 export class Model extends Child {
   data = null;
-  controller = null;
 
   constructor({ data } = {}) {
     super();
@@ -12,59 +11,7 @@ export class Model extends Child {
   get props() {
     return {
       addToArray({ fieldName, data }) {
-        if (!Array.isArray(this.data[fieldName])) {
-          throw new Error("must be array");
-        }
-
-        if (!this.data[`${fieldName}:counter`]) {
-          this.data[`${fieldName}:counter`] = 1;
-        } else {
-          this.data[`${fieldName}:counter`] += 1;
-        }
-
         this.data[fieldName].push(data);
-
-        this.controller.notify({
-          methodName: "addToArray",
-          fieldName,
-          dataInfo: {
-            newElement: data,
-          },
-        });
-      },
-      addToObject({ fieldName, data }) {
-        let counter = this.data[fieldName].counter;
-
-        if (!counter) {
-          counter = 1;
-        } else {
-          counter++;
-        }
-
-        this.data[fieldName][counter] = data;
-
-        this.controller.notify({
-          methodName: "addToObject",
-          fieldName,
-          dataInfo: {
-            newElement: { id: counter, ...data },
-          },
-        });
-
-        this.data[fieldName].counter = counter;
-      },
-      set({ fieldName, data }) {
-        this.controller.notify({
-          methodName: "set",
-          fieldName,
-          dataInfo: {
-            oldValue: this.data[fieldName],
-            newValue: data,
-            model: this.data,
-          },
-        });
-
-        this.data[fieldName] = data;
       },
     };
   }
@@ -75,6 +22,12 @@ export class Model extends Child {
         const data = values[fieldName][methodName];
         if (data !== undefined && this.data[fieldName] !== undefined) {
           this.props[methodName].call(this, { fieldName, data });
+
+          const d = this.controller.onChange[fieldName].addToArray;
+
+          if (typeof d === "string") {
+            this.controller.ask(d, data);
+          }
         }
       }
     }

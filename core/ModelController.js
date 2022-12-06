@@ -2,9 +2,11 @@ import { Controller } from "./Controller.js";
 import { Model } from "./Model.js";
 
 export class ModelController extends Controller {
-  constructor({ modelChanges, ...props } = {}) {
+  onChange = {};
+
+  constructor({ onChange, ...props } = {}) {
     super(props);
-    this.setModelChanges(modelChanges);
+    this.setOnChange(onChange);
   }
 
   setChild(model) {
@@ -14,32 +16,9 @@ export class ModelController extends Controller {
     }
   }
 
-  setComponent(component) {
-    super.setComponent(component);
-    this.initModelChanges();
-  }
+  setOnChange(onChange) {
+    if (!onChange) return;
 
-  setModelChanges(modelChanges) {
-    if (modelChanges) {
-      this.modelChanges = modelChanges;
-    }
+    this.onChange = onChange;
   }
-
-  initModelChanges() {
-    for (let modelEventName in this.modelChanges) {
-      for (let fieldName in this.modelChanges[modelEventName]) {
-        if (this.child.data[fieldName] !== undefined) {
-          // console.log(11);
-        }
-      }
-      // change: {
-      //   title(data) {
-      //     console.log("this", this);
-      //     console.log("data", data);
-      //   },
-      // },
-    }
-  }
-
-  trigger() {}
 }

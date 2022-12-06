@@ -55,6 +55,16 @@ export class View extends Child {
           }
         }
       },
+      event(data, self) {
+        if (!this.events) {
+          this.events = {};
+        }
+
+        for (let eventName in data) {
+          this.events[eventName] = data[eventName];
+          this.view = self;
+        }
+      },
     };
   }
 
@@ -94,6 +104,8 @@ export class View extends Child {
     if (elProps.name) {
       this.children[elProps.name] = component;
     }
+
+    // debugger;
 
     this._setProps(elProps, component);
 
