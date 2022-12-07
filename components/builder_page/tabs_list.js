@@ -15,7 +15,11 @@ function TabsListComponent() {
   return new Component({
     listen: {
       changeViewsWithNewPage(data) {
-        this.addChild({ child: TabsListItemViewController, data });
+        this.addChild({
+          child: TabsListItemViewController,
+          data: data.newItem,
+          id: data.array.length - 1,
+        });
       },
     },
   });
@@ -112,7 +116,7 @@ function TabsListItemViewController() {
       onStarted(data) {
         this.askForRender({
           root: {
-            text: data.newItem.name,
+            text: data.name,
           },
         });
 
