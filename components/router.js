@@ -31,7 +31,7 @@ export function RouterComponent() {
     children: [RouterController, RouterModel],
     listen: {
       addPage(page) {
-        this.addChild(page);
+        this.addChild({ child: page });
       },
     },
   });

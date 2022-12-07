@@ -12,6 +12,14 @@ export class Model extends Child {
     return {
       addToArray({ fieldName, data }) {
         this.data[fieldName].push(data);
+        const d = this.controller.onChange[fieldName].addToArray;
+
+        if (typeof d === "string") {
+          this.controller.ask(d, {
+            newItem: data,
+            array: this.data[fieldName],
+          });
+        }
       },
     };
   }
@@ -22,12 +30,6 @@ export class Model extends Child {
         const data = values[fieldName][methodName];
         if (data !== undefined && this.data[fieldName] !== undefined) {
           this.props[methodName].call(this, { fieldName, data });
-
-          const d = this.controller.onChange[fieldName].addToArray;
-
-          if (typeof d === "string") {
-            this.controller.ask(d, data);
-          }
         }
       }
     }

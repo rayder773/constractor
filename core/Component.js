@@ -29,14 +29,14 @@ export class Component extends Entity {
     this.children = children;
   }
 
-  addChild(child) {
+  addChild({ child, id = this.generateId(), data }) {
     if (!child) return;
 
     child = child();
     child.setParent(this);
-    const id = this.generateId();
+    child.setId(id);
     this.childrenById[id] = child;
-    child.start();
+    child.start(data);
   }
 
   tell(eventName, params) {
@@ -80,14 +80,14 @@ export class Component extends Entity {
     super.ask(eventName, params);
   }
 
-  start() {
+  start(data) {
     if (!this.children) return;
 
     this.children.forEach((child) => {
-      this.addChild(child);
+      this.addChild({ child });
     });
 
-    super.start();
+    super.start(data);
 
     delete this.children;
   }

@@ -1,6 +1,8 @@
 import { Component } from "../core/Component.js";
 import { ModelController } from "../core/ModelController.js";
 import { ViewController } from "../core/ViewController.js";
+import { BuilderPagePagesListComponent } from "./builder_page/pages.js";
+import { BuilderPageTabsListComponent } from "./builder_page/tabs_list.js";
 
 function builderViewController() {
   return new ViewController({
@@ -70,18 +72,16 @@ function builderViewController() {
     listen: {
       appendBuilderPageComponent(data) {
         this.ask("askForRender", {
-          parent: this.child.$(data.name),
-          child: data.html,
+          element: this,
+          params: {
+            [data.name]: {
+              appendDomElement: data.html,
+            },
+          },
         });
       },
       sendPageForRender() {
         this.ask("newPageAdded", this.child.root);
-      },
-      changeViewsWithNewPage(data) {
-        this.ask("askForRender", {
-          parent: this.child.$("pages"),
-          child: data.name,
-        });
       },
     },
   });
@@ -92,6 +92,7 @@ function builderModelController() {
     child: {
       data: {
         pages: [],
+        activePage: null,
       },
     },
     onChange: {
@@ -107,55 +108,8 @@ function builderModelController() {
           },
         });
       },
-    },
-  });
-}
-
-function pageTabsViewController() {
-  return new ViewController({
-    child: {
-      component: {
-        div: {
-          style: {
-            display: "flex",
-          },
-          append: [
-            {
-              ul: {
-                name: "pageList",
-                style: {
-                  display: "flex",
-                },
-              },
-            },
-            {
-              button: {
-                style: {
-                  width: "40px",
-                },
-                text: "+",
-                name: "addPage",
-                event: {
-                  click: "onPlusClick",
-                },
-              },
-            },
-          ],
-        },
-      },
-    },
-    listen: {
-      createPleasePage() {
-        this.ask("gatherBuilderPage", {
-          name: "pageTabs",
-          html: this.child.root,
-        });
-      },
-      changeViewsWithNewPage(data) {
-        this.ask("askForRender", {
-          parent: this.child.$("pageList"),
-          child: data.name,
-        });
+      makePageActive(data) {
+        console.log(data);
       },
     },
   });
@@ -166,12 +120,14 @@ export function builderPageComponent() {
     children: [
       builderViewController,
       builderModelController,
-      pageTabsViewController,
+      BuilderPagePagesListComponent,
+      BuilderPageTabsListComponent,
     ],
     proxy: {
       gatherBuilderPage: "appendBuilderPageComponent",
       onPlusClick: "addPlus",
       newPageInModel: "changeViewsWithNewPage",
+      onTabClick: "makePageActive",
     },
     hooks: {
       onStarted() {

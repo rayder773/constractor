@@ -39,7 +39,10 @@ export class WindowController extends Controller {
             if (target.view.controller.clientEvents[systemEventName]) {
               target.view.controller.clientEvents[systemEventName](e);
             } else {
-              target.view.controller.ask(systemEventName, e);
+              target.view.controller.ask(systemEventName, {
+                event: e,
+                id: target.view.controller.id,
+              });
             }
           }
         }

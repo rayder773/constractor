@@ -7,7 +7,14 @@ export function DocumentViewController() {
     },
     listen: {
       changeBody(body) {
-        this.ask("askForRender", { parent: this.child.$("body"), child: body });
+        this.ask("askForRender", {
+          element: this,
+          params: {
+            body: {
+              content: body,
+            },
+          },
+        });
       },
     },
   });

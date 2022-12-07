@@ -16,9 +16,15 @@ export class ViewController extends Controller {
   }
 
   setChild(view) {
-    if (view) {
-      this.child = new View(view);
-      this.child.setController(this);
+    if (!view) {
+      view = { component: document.createElement("div") };
     }
+
+    this.child = new View(view);
+    this.child.setController(this);
+  }
+
+  askForRender(params) {
+    this.ask("askForRender", { element: this, params });
   }
 }

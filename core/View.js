@@ -29,6 +29,14 @@ export class View extends Child {
           this.append(newEl);
         });
       },
+      appendDomElement(data) {
+        if (!Array.isArray(data)) {
+          data = [data];
+        }
+        data.forEach((el) => {
+          this.append(el);
+        });
+      },
       content(data) {
         this.innerHTML = "";
         this.append(data);
@@ -101,11 +109,9 @@ export class View extends Child {
 
     const elProps = element[tag];
 
-    if (elProps.name) {
+    if (elProps?.name) {
       this.children[elProps.name] = component;
     }
-
-    // debugger;
 
     this._setProps(elProps, component);
 
