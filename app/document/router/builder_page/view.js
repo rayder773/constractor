@@ -1,10 +1,6 @@
-import { Component } from "../core/Component.js";
-import { ModelController } from "../core/ModelController.js";
-import { ViewController } from "../core/ViewController.js";
-import { BuilderPagePagesListComponent } from "./builder_page/pages.js";
-import { BuilderPageTabsListComponent } from "./builder_page/tabs_list.js";
+import { ViewController } from "../../../../core/ViewController.js";
 
-function builderViewController() {
+export function BuilderViewController() {
   return new ViewController({
     child: {
       component: {
@@ -82,57 +78,6 @@ function builderViewController() {
       },
       sendPageForRender() {
         this.ask("newPageAdded", this.child.root);
-      },
-    },
-  });
-}
-
-function builderModelController() {
-  return new ModelController({
-    child: {
-      data: {
-        pages: [],
-        activePage: null,
-      },
-    },
-    onChange: {
-      pages: {
-        addToArray: "newPageInModel",
-      },
-    },
-    listen: {
-      addPlus() {
-        this.change({
-          pages: {
-            addToArray: { name: "new page" },
-          },
-        });
-      },
-      makePageActive(data) {
-        console.log(data);
-      },
-    },
-  });
-}
-
-export function builderPageComponent() {
-  return new Component({
-    children: [
-      builderViewController,
-      builderModelController,
-      BuilderPagePagesListComponent,
-      BuilderPageTabsListComponent,
-    ],
-    proxy: {
-      gatherBuilderPage: "appendBuilderPageComponent",
-      onPlusClick: "addPlus",
-      newPageInModel: "changeViewsWithNewPage",
-      onTabClick: "makePageActive",
-    },
-    hooks: {
-      onStarted() {
-        this.tell("createPleasePage");
-        this.tell("sendPageForRender");
       },
     },
   });

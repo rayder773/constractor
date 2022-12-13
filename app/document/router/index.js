@@ -1,7 +1,7 @@
-import { Component } from "../core/Component.js";
-import { builderPageComponent } from "./builderPage.js";
-import { Controller } from "../core/Controller.js";
-import { ModelController } from "../core/ModelController.js";
+import { Component } from "../../../core/Component.js";
+import { Controller } from "../../../core/Controller.js";
+import { ModelController } from "../../../core/ModelController.js";
+import { BuilderPageComponent } from "./builder_page/index.js";
 
 export function RouterController() {
   return new Controller({
@@ -11,7 +11,7 @@ export function RouterController() {
 
         switch (hash) {
           case "/":
-            return this.ask("addPage", builderPageComponent);
+            return this.ask("addPage", BuilderPageComponent);
         }
       },
 

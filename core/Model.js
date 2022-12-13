@@ -11,6 +11,10 @@ export class Model extends Child {
   get props() {
     return {
       addToArray({ fieldName, data }) {
+        if (!data.id) {
+          data.id = +new Date();
+        }
+
         this.data[fieldName].push(data);
         const d = this.controller.onChange[fieldName].addToArray;
 

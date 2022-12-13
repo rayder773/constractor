@@ -1,8 +1,7 @@
 import { Entity } from "./Entity.js";
 
 export class Component extends Entity {
-  childrenById = {};
-  compose = true;
+  children = [];
   proxy = {};
 
   constructor({ children, proxy, ...props } = {}) {
@@ -29,31 +28,18 @@ export class Component extends Entity {
     this.children = children;
   }
 
-  addChild({ child, id = this.generateId(), data }) {
-    if (!child) return;
-
-    child = child();
-    child.setParent(this);
-    child.setId(id);
-    this.childrenById[id] = child;
-    child.start(data);
-  }
-
   tell(eventName, params) {
-    if (!Object.keys(this.childrenById).length) return;
+    if (!this.children.length) return;
 
-    for (let id in this.childrenById) {
-      if (this.childrenById[id].compose) {
-        this.childrenById[id].tell(eventName, params);
+    this.children.forEach((child) => {
+      if (child.children) {
+        child.tell(eventName, params);
       }
 
-      if (this.childrenById[id].listen[eventName]) {
-        this.childrenById[id].listen[eventName].call(
-          this.childrenById[id],
-          params
-        );
+      if (child.listen[eventName]) {
+        child.listen[eventName].call(child, params);
       }
-    }
+    });
   }
 
   ask(eventName, params) {
@@ -80,24 +66,43 @@ export class Component extends Entity {
     super.ask(eventName, params);
   }
 
-  start(data) {
-    if (!this.children) return;
+  createChild(child) {
+    child = child();
+    child.setParent(this);
 
-    this.children.forEach((child) => {
-      this.addChild({ child });
-    });
-
-    super.start(data);
-
-    delete this.children;
+    return child;
   }
 
-  generateId() {
-    let lastId =
-      Object.keys(this.childrenById)[
-        Object.keys(this.childrenById).length - 1
-      ] || -1;
+  addChild({ child, data, id }) {
+    const createdChild = this.createChild(child);
+    createdChild.setId(id);
+    this.children.push(createdChild);
 
-    return parseInt(lastId) + 1;
+    this.initEntity(createdChild);
+    this.startEntity(createdChild, data);
+  }
+
+  startEntity(entity = this, data) {
+    if (entity.children) {
+      entity.children.forEach((child) => {
+        this.startEntity(child, data);
+      });
+    }
+
+    entity.start(data);
+  }
+
+  initEntity(entity = this) {
+    if (!entity.children) return;
+
+    entity.children.forEach((child, i) => {
+      child = entity.createChild(child);
+
+      entity.children[i] = child;
+
+      if (child.children) {
+        child.initEntity();
+      }
+    });
   }
 }

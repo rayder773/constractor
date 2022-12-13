@@ -1,4 +1,4 @@
-import { WindowController } from "../core/WindowController.js";
+import { WindowController } from "../../core/WindowController.js";
 
 export function MainWindowController() {
   return new WindowController({

@@ -1,6 +1,6 @@
-import { Controller } from "../core/Controller.js";
+import { Controller } from "../../../core/Controller.js";
 
-export function renderController() {
+export function RenderController() {
   return new Controller({
     listen: {
       render({ element, params }) {
