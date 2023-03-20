@@ -1,14 +1,15 @@
-import { EventEmmiter } from "./event_emmiter.js";
+import { Parent } from "./parent.js";
 
 const EVENT = {
   RENDER: "RENDER",
 };
 
 export function View() {
-  let children = [];
-
   return Object.freeze({
-    ...EventEmmiter(),
+    ...Parent(),
+    getEvents() {
+      return EVENT;
+    },
     render(params) {
       const { parent = document.body, child } = params;
 
@@ -20,16 +21,7 @@ export function View() {
 
       this.notify(EVENT.RENDER);
 
-      if (children.length > 0) {
-        children.forEach((child) => {
-          child.notify(EVENT.RENDER);
-        });
-      }
-    },
-    addChild(child) {
-      if (!children.includes(child)) {
-        children.push(child);
-      }
+      this.recursiveNotifyChildren(EVENT.RENDER);
     },
   });
 }

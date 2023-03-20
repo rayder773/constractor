@@ -18,5 +18,8 @@ export function EventEmmiter() {
         });
       }
     },
+    getListeners() {
+      return listeners;
+    },
   });
 }

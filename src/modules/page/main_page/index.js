@@ -1,24 +1,29 @@
 import { Builder } from "../../builder/index.js";
 import { Page } from "../index.js";
+import { MainPageModel } from "./model.js";
 import { MainPageView } from "./view.js";
 
 export function MainPage() {
   const builder = Builder();
   const page = Page();
 
-  const mainPageView = MainPageView({
+  const view = MainPageView({
     builderView: builder.getBuilderView(),
     pageView: page.getPageView(),
   });
 
-  mainPageView.addListener("RENDER", () => {
-    console.log("render main page");
+  const model = MainPageModel({
+    builderModel: builder.getBuilderModel(),
   });
 
   return Object.freeze({
-    ...mainPageView,
+    ...view,
+    ...model,
     getMainPageView() {
       return MainPageView;
+    },
+    getMainPageModel() {
+      return model;
     },
   });
 }
