@@ -1,20 +1,20 @@
-import { Grid } from "../grid/index.js";
+import { Pages } from "../pages/index.js";
 import { Tabs } from "../tabs/index.js";
 import { BuilderModel } from "./model.js";
 import { BuilderView } from "./view.js";
 
 export function Builder() {
   const tabs = Tabs();
-  const grid = Grid();
+  const pages = Pages();
 
   const view = BuilderView({
     tabsView: tabs.getTabsView(),
-    gridView: grid.getGridView(),
+    pagesView: pages.getPagesView(),
   });
 
   const model = BuilderModel({
     tabsModel: tabs.getTabsModel(),
-    gridModel: grid.getGridModel(),
+    pagesModel: pages.getPagesModel(),
   });
 
   const module = Object.freeze({

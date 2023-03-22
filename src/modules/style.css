@@ -2,3 +2,5 @@
 @import url(page/main_page/style.css);
 @import url(tabs/style.css);
 @import url(builder/style.css);
+@import url(pages/style.css);
+@import url(grid/style.css);

@@ -25,10 +25,10 @@ export function GridModel() {
       const newGrid = {
         rows: 0,
         cols: 0,
-        id,
+        id: 0,
       };
 
-      grids[id] = newGrid;
+      grids[id] = [newGrid];
 
       this.notify(EVENT.NEW, newGrid);
     },

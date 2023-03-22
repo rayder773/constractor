@@ -14,7 +14,5 @@ export function Grid() {
     },
   });
 
-  model.onAddGrid(view.addGridElement);
-
   return module;
 }

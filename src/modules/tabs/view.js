@@ -14,6 +14,7 @@ export function TabsView() {
       const addButtonElement = document.createElement("button");
       addButtonElement.textContent = "+";
       addButtonElement.id = "add-tab-button";
+
       container.append(addButtonElement);
 
       return container;
@@ -26,7 +27,13 @@ export function TabsView() {
 
       const tabElement = document.createElement("li");
       tabElement.id = "tab-" + data.id;
-      tabElement.textContent = data.name;
+      tabElement.classList.add("tab");
+
+      const button = document.createElement("button");
+      button.textContent = data.name;
+
+      tabElement.append(button);
+
       listElement.append(tabElement);
     },
   });
