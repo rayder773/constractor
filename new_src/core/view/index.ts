@@ -10,36 +10,34 @@ export class View extends Child implements ViewInterface {
 
   constructor() {
     super();
-    this.create();
-  }
-
-  setActiveElement({ key, element }: { key: string; element: HTMLElement }) {
-    this.activeElements[key] = {
-      element,
-      listeners: [],
-    };
   }
 
   create(children: { [key: string]: HTMLElement } = {}) {
-    // return document.createElement("div");
+    return {};
   }
 
-  start() {
-    // this.addListeners();
+  start(children: any = {}) {
+    const { rootElement, activeElements } = createElement(
+      this.create(children)
+    );
+
+    this.rootElement = rootElement;
+    this.activeElements = activeElements;
+
+    return rootElement;
   }
+}
 
-  render({ parent = document.body }: { parent?: HTMLElement } = {}): void {
-    // this.start();
-    // const element = this.create();
-    // parent.appendChild(element);
-  }
+function createElement(schema = {}): {
+  rootElement: HTMLElement;
+  activeElements: {
+    [key: string]: { element: HTMLElement; listeners: Function[] };
+  };
+} {
+  console.log(schema);
 
-  remove() {
-    // this.removeListeners();
-    // this.activeElements = {};
-  }
-
-  addListeners() {}
-
-  removeListeners() {}
+  return {
+    rootElement: document.createElement("div"),
+    activeElements: {},
+  };
 }

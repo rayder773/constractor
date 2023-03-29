@@ -5,12 +5,18 @@ import { MainPageView } from "./view.js";
 
 export class MainPage extends ViewModel {
   constructor() {
+    const builder = new Builder();
+
     super({
       view: new MainPageView(),
       model: new MainPageModel(),
       children: {
-        builder: new Builder(),
+        builder,
       },
+    });
+
+    this.start({
+      builderElement: document.createElement("div"),
     });
   }
 }

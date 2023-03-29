@@ -1,7 +1,7 @@
 import { Child } from "./Child.js";
 
 export class Parent extends Child {
-  children: {
+  protected children: {
     [key: string]: Child;
   };
 

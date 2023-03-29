@@ -20,8 +20,10 @@ export class ViewModel extends Parent {
     this.model = model;
   }
 
-  start() {
-    // this.view.render();
+  start(children: any) {
+    console.log(this.children);
+
+    // this.view.start(children);
   }
 
   stop() {
