@@ -1,0 +1,21 @@
+#tabs {
+  display: flex;
+  align-items: center;
+}
+
+#tabs > *:not(:last-child) {
+  margin-right: 5px;
+}
+
+#tabs-list {
+  display: flex;
+}
+
+#tabs-list .tab:not(:last-child) {
+  margin-right: 5px;
+}
+
+.tab {
+  padding: 5px;
+  border: 1px solid #ccc;
+}
