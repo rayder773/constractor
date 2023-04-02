@@ -4,6 +4,6 @@ import { BuilderView } from "./view.js";
 
 export class Builder extends ViewModel {
   constructor() {
-    super({ view: new BuilderView(), model: new BuilderModel(), children: {} });
+    super({ view: new BuilderView(), model: new BuilderModel() });
   }
 }

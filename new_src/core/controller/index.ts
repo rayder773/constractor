@@ -1,32 +1,33 @@
-import { Parent } from "../Parent.js";
 import { Model } from "../model/index.js";
 import { View } from "../view/index.js";
 
-export class ViewModel extends Parent {
+export class ViewModel {
   view: View;
   model: Model;
+  children: { [key: string]: ViewModel } = {};
 
-  constructor({
-    view,
-    model,
-    children = {},
-  }: {
-    view: View;
-    model: Model;
-    children: { [key: string]: ViewModel };
-  }) {
-    super({ children });
+  constructor({ view, model }: { view: View; model: Model }) {
     this.view = view;
     this.model = model;
   }
 
-  start(children: any) {
-    console.log(this.children);
-
-    // this.view.start(children);
+  getViewRoot() {
+    return this.view.getRoot();
   }
 
-  stop() {
-    // this.view.remove();
+  start() {
+    this.view.create();
   }
+
+  renderView() {
+    this.view.render();
+  }
+
+  appendToViewElement(params: { [key: string]: HTMLElement }) {
+    for (let name in params) {
+      this.view.appendToActiveElement(name, params[name]);
+    }
+  }
+
+  stop() {}
 }
