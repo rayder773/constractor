@@ -22,8 +22,4 @@ export class MainPageViewModelWrapper extends ViewModelWrapper {
       builder: builder.getControllerViewRoot(),
     });
   }
-
-  render() {
-    this.controller.renderView();
-  }
 }

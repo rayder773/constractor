@@ -1,6 +1,7 @@
+import { Parent } from "./Parent.js";
 import { ViewModel } from "./controller/index.js";
 
-export class ViewModelWrapper {
+export class ViewModelWrapper extends Parent {
   protected controller: ViewModel;
   protected children: { [key: string]: ViewModelWrapper };
   readonly childrenNames: { [key: string]: string };
@@ -12,9 +13,13 @@ export class ViewModelWrapper {
     controller: ViewModel;
     children?: { [key: string]: ViewModelWrapper };
   }) {
-    this.controller = controller;
+    super({ children });
+
     this.children = children;
+    this.controller = controller;
     this.childrenNames = {};
+
+    controller.setParent(this);
   }
 
   getChildByName(name: string) {
@@ -33,7 +38,24 @@ export class ViewModelWrapper {
     }
   }
 
+  render() {
+    this.controller.renderView();
+
+    this.informViewChildrenOnRender();
+  }
+
+  informViewChildrenOnRender() {
+    for (let name in this.children) {
+      this.children[name].informViewChildrenOnRender();
+      this.children[name].controller.view.onRender();
+    }
+  }
+
   getControllerViewRoot() {
     return this.controller.getViewRoot();
+  }
+
+  getControllerModel() {
+    return this.controller.model;
   }
 }

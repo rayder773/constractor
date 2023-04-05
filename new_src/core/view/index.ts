@@ -1,15 +1,30 @@
+import { Child } from "../Child.js";
 import { ViewInterface } from "./interface.js";
 
-export class View implements ViewInterface {
+export class View extends Child implements ViewInterface {
+  elementNames: { [key: string]: string };
+
+  elementEventNames: { [key: string]: string };
+
   activeElements: {
     [key: string]: HTMLElement;
+  };
+
+  events: {
+    [key: string]: {
+      [key: string]: "string";
+    };
   };
 
   rootElement: HTMLElement;
 
   constructor() {
+    super();
     this.rootElement = document.createElement("div");
+    this.events = {};
     this.activeElements = {};
+    this.elementNames = {};
+    this.elementEventNames = {};
   }
 
   appendToActiveElement(name: string, element: HTMLElement) {
@@ -28,6 +43,14 @@ export class View implements ViewInterface {
     return {};
   }
 
+  getActiveElement(name: string) {
+    if (!this.activeElements[name]) {
+      throw new Error(`Element with name ${name} not found`);
+    }
+
+    return this.activeElements[name];
+  }
+
   createFromSchema(
     schema: any,
     params: any = {
@@ -42,8 +65,20 @@ export class View implements ViewInterface {
       }
     }
 
+    if (schema.text) {
+      element.textContent = schema.text;
+    }
+
     if (schema.name) {
       params.activeElements[schema.name] = element;
+
+      if (schema.events) {
+        for (let eventName in schema.events) {
+          if (!this.events[schema.name]) this.events[schema.name] = {};
+
+          this.events[schema.name][eventName] = schema.events[eventName];
+        }
+      }
     }
 
     if (schema.ch) {
@@ -67,5 +102,33 @@ export class View implements ViewInterface {
 
   render(parent: HTMLElement = document.body) {
     parent.append(this.rootElement);
+
+    this.onRender();
   }
+
+  onRender() {
+    this.addEventListener();
+  }
+
+  onRemove() {
+    this.removeEventListener();
+  }
+
+  addEventListener() {
+    for (let elementName in this.events) {
+      const element = this.activeElements[elementName];
+
+      for (let eventName in this.events[elementName]) {
+        const eventType = this.events[elementName][eventName];
+
+        element.addEventListener(eventName, this.onEvent.bind(this, eventType));
+      }
+    }
+  }
+
+  onEvent(eventType: string, e: Event) {
+    this.emit(eventType, e);
+  }
+
+  removeEventListener() {}
 }

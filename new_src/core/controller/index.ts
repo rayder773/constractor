@@ -1,12 +1,13 @@
+import { Parent } from "../Parent.js";
 import { Model } from "../model/index.js";
 import { View } from "../view/index.js";
 
-export class ViewModel {
+export class ViewModel extends Parent {
   view: View;
   model: Model;
-  children: { [key: string]: ViewModel } = {};
 
   constructor({ view, model }: { view: View; model: Model }) {
+    super({ children: { view, model } });
     this.view = view;
     this.model = model;
   }

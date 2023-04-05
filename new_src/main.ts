@@ -19,4 +19,5 @@ const app = new MainPageViewModelWrapper({
 });
 
 app.start();
+
 app.render();
