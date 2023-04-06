@@ -13,17 +13,38 @@ export class Child {
     this.parent = parent;
   }
 
+  initEvents(): { [key: string]: Function } {
+    return {};
+  }
+
+  initChild() {
+    let lastParent: Child | any = this;
+
+    while (lastParent.getParent()) {
+      lastParent = lastParent.getParent();
+    }
+
+    const events = this.initEvents();
+
+    for (let event in events) {
+      lastParent.on(event, events[event]);
+    }
+  }
+
   getParent(): Parent | null {
     return this.parent;
   }
 
   emit(event: string, ...args: any[]): void {
-    let parent = this.getParent();
+    let lastParent: Child | any = this;
 
-    while (parent) {
-      this.exec.call(parent, event, ...args);
-      parent = parent.getParent();
+    while (lastParent.getParent()) {
+      lastParent = lastParent.getParent();
     }
+
+    lastParent.subscribtions[event]?.forEach((callback: any) =>
+      callback(...args)
+    );
   }
 
   exec(event: string, ...args: any[]): void {

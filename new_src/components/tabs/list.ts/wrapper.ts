@@ -14,8 +14,12 @@ export class TabsListControllerWrapper extends ViewModelWrapper {
     super({ controller, children });
 
     this.controller = controller;
+  }
 
-    this.on("addTab", this.controller.model.addTab.bind(this.controller.model));
-    this.on("change", this.controller.view.append.bind(this.controller.view));
+  initEvents() {
+    return {
+      addTab: this.controller.model.addTab.bind(this.controller.model),
+      change: this.controller.view.append.bind(this.controller.view),
+    };
   }
 }

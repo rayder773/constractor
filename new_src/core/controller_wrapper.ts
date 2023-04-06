@@ -35,7 +35,10 @@ export class ViewModelWrapper extends Parent {
 
     for (let name in this.children) {
       this.children[name].start();
+      this.children[name].initChild();
     }
+
+    this.controller.initChild();
   }
 
   render() {

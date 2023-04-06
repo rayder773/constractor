@@ -12,8 +12,6 @@ export class TabsControllerWrapper extends ViewModelWrapper {
       controller: new TabsController(),
       children: { ...children, list: new TabsListControllerWrapper({}) },
     });
-
-    this.redirect("addTab");
   }
 
   start() {

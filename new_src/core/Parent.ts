@@ -22,19 +22,9 @@ export class Parent extends Child {
     delete this.children[name];
   }
 
-  redirect(event: string, ...args: any[]): void {
-    this.on(event, this.checkChildren.bind(this, event, ...args));
-  }
-
-  checkChildren(event: string, ...args: any[]): void {
-    for (let name in this.children) {
-      const child = this.children[name];
-
-      child.exec(event, ...args);
-
-      if (child instanceof Parent) {
-        child.checkChildren(event);
-      }
+  initChildren(): void {
+    for (const name in this.children) {
+      this.children[name].initChild();
     }
   }
 }
