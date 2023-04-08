@@ -1,6 +1,6 @@
 import { ViewModelWrapper } from "../../core/controller_wrapper.js";
 import { TabsController } from "./controller.js";
-import { TabsListControllerWrapper } from "./list.ts/wrapper.js";
+import { TabsListControllerWrapper } from "./list/wrapper.js";
 
 export class TabsControllerWrapper extends ViewModelWrapper {
   constructor({

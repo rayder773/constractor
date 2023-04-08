@@ -8,20 +8,22 @@ export class ViewList extends View {
     this.items = [];
   }
 
-  html(): HTMLElement {
+  html(): {} {
     return document.createElement("ul");
   }
 
   create() {
-    this.rootElement = this.html();
+    this.rootElement = this.createFromSchema(this.html()).rootElement;
   }
 
   createListItem(data: any) {
-    return document.createElement("li");
+    return this.createFromSchema({
+      tag: "li",
+    });
   }
 
   append(data: any) {
-    const itemElement = this.createListItem(data);
+    const itemElement = this.createListItem(data).rootElement;
 
     this.items.push(itemElement);
 
