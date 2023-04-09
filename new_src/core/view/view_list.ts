@@ -12,10 +12,6 @@ export class ViewList extends View {
     return document.createElement("ul");
   }
 
-  create() {
-    this.rootElement = this.createFromSchema(this.html()).rootElement;
-  }
-
   createListItem(data: any) {
     return this.createFromSchema({
       tag: "li",
@@ -28,5 +24,27 @@ export class ViewList extends View {
     this.items.push(itemElement);
 
     this.rootElement.append(itemElement);
+  }
+
+  onEvent(eventType: string, e: Event, index?: any) {
+    this.emit(eventType, e, index);
+  }
+
+  handleEvent(
+    element: HTMLElement,
+    eventName: string,
+    eventType: string
+  ): void {
+    element.addEventListener(eventName, (e) => {
+      let target = e.target as HTMLElement;
+
+      while (target.classList.contains("item") === false) {
+        target = target.parentElement as HTMLElement;
+      }
+
+      const foundIndex = this.items.findIndex((el) => el === target);
+
+      this.onEvent(eventType, e, foundIndex);
+    });
   }
 }

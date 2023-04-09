@@ -14,6 +14,9 @@ export class MainPageView extends View {
         {
           tag: "div",
           name: "builder",
+          attributes: {
+            id: "builder-wrapper",
+          },
         },
         {
           tag: "div",

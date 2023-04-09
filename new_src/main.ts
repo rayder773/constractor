@@ -1,6 +1,6 @@
 import { Builder } from "./components/builder/controller.js";
 import { BuilderControllerWrapper } from "./components/builder/wrapper.js";
-import { PagesControllerWrapper } from "./components/pages_list/wrapper.js";
+import { PagesControllerWrapper } from "./components/pages/wrapper.js";
 import { TabsControllerWrapper } from "./components/tabs/wrapper.js";
 import { MainPage } from "./pages/main_page/controller.js";
 import { MainPageViewModelWrapper } from "./pages/main_page/wrapper.js";

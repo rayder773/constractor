@@ -1,5 +1,6 @@
+import { Events } from "../../../core/Events.js";
 import { ViewModelWrapper } from "../../../core/controller_wrapper.js";
-import { TabsListController } from "./index.js";
+import { TabsListController } from "./controller.js";
 
 export class TabsListControllerWrapper extends ViewModelWrapper {
   protected controller: TabsListController;
@@ -19,7 +20,9 @@ export class TabsListControllerWrapper extends ViewModelWrapper {
   initEvents() {
     return {
       addTab: this.controller.model.addTab.bind(this.controller.model),
-      change: this.controller.view.append.bind(this.controller.view),
+      [Events.MODEL.TABLIST_CHANGE]: this.controller.view.append.bind(
+        this.controller.view
+      ),
     };
   }
 }

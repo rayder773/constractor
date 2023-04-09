@@ -17,6 +17,9 @@ export class TabsView extends View {
   html() {
     return {
       tag: "div",
+      attributes: {
+        id: "tabs",
+      },
       ch: [
         {
           tag: "div",

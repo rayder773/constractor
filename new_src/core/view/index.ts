@@ -121,9 +121,13 @@ export class View extends Child implements ViewInterface {
       for (let eventName in this.events[elementName]) {
         const eventType = this.events[elementName][eventName];
 
-        element.addEventListener(eventName, this.onEvent.bind(this, eventType));
+        this.handleEvent(element, eventName, eventType);
       }
     }
+  }
+
+  handleEvent(element: HTMLElement, eventName: string, eventType: string) {
+    element.addEventListener(eventName, this.onEvent.bind(this, eventType));
   }
 
   onEvent(eventType: string, e: Event) {
