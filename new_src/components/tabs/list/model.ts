@@ -8,18 +8,35 @@ export class TabsListModel extends Model {
 
   constructor() {
     super();
+
     this.data = {
       tabs: [],
+      selectedIndex: null,
+    };
+  }
+
+  getDefaultTab() {
+    return {
+      name: "New Tab",
+      id: this.data.tabs.length,
     };
   }
 
   addTab() {
-    this.data.tabs.push(this.data.tabs.length);
+    this.data.tabs.push(this.getDefaultTab());
     this.emit(TabsListModel.EVENTS.TABLIST_CHANGE, this.data.tabs.length);
+
+    if (this.data.selectedIndex === null) {
+      this.selectTab(0);
+    }
   }
 
   selectTab(index: number) {
-    this.data.tabs[index].selected = true;
-    this.emit(TabsListModel.EVENTS.CHANGE_ACTIVE_TAB, index);
+    this.emit(TabsListModel.EVENTS.CHANGE_ACTIVE_TAB, {
+      oldSelected: this.data.selectedIndex,
+      newSelected: index,
+    });
+
+    this.data.selectedIndex = index;
   }
 }

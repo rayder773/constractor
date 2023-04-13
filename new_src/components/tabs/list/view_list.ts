@@ -37,7 +37,13 @@ export class TabsListViewList extends ViewList {
     });
   }
 
-  changeActiveTab(index: number) {
-    console.log("111", index);
+  changeActiveTab(data: { oldSelected: number; newSelected: number }) {
+    const { oldSelected, newSelected } = data;
+
+    if (oldSelected !== null) {
+      this.items[oldSelected].classList.remove("active");
+    }
+
+    this.items[newSelected].classList.add("active");
   }
 }

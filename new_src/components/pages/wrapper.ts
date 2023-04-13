@@ -19,8 +19,11 @@ export class PagesControllerWrapper extends ViewModelWrapper {
 
   initEvents() {
     return {
-      [Events.MODEL.TABLIST_CHANGE]: this.controller.view.append.bind(
+      [Events.MODEL.ADD_PAGE_TO_MODEL]: this.controller.view.append.bind(
         this.controller.view
+      ),
+      [Events.MODEL.TABLIST_CHANGE]: this.controller.model.addPage.bind(
+        this.controller.model
       ),
     };
   }
